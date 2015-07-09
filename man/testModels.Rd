@@ -84,17 +84,17 @@ Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}. Hobo
 \examples{
 data(studentratings)
 
-fml <- LangDis + SES ~ LangAchiev + (1|ID)
+fml <- ReadDis + SES ~ ReadAchiev + (1|ID)
 imp <- panImpute(studentratings, formula=fml, n.burn=1000, n.iter=100, m=5)
 
 implist <- mitmlComplete(imp, print=1:5)
 
-# * Example 1: multiparameter hypothesis test for 'LangDis' and 'SES'
+# * Example 1: multiparameter hypothesis test for 'ReadDis' and 'SES'
 # This tests the hypothesis that both effects are zero.
 
 require(lme4)
-fit0 <- with(implist, lmer(LangAchiev ~ (1|ID), REML=FALSE))
-fit1 <- with(implist, lmer(LangAchiev ~ LangDis + (1|ID), REML=FALSE))
+fit0 <- with(implist, lmer(ReadAchiev ~ (1|ID), REML=FALSE))
+fit1 <- with(implist, lmer(ReadAchiev ~ ReadDis + (1|ID), REML=FALSE))
 
 # apply Rubin's rules
 testEstimates(fit1)
@@ -121,10 +121,10 @@ testModels(fit1, fit0, method="D3")
 # can be constructed manually
 
 require(nlme)
-fit0 <- with(implist, lme(LangAchiev~1, random=~1|ID,
-  data=data.frame(LangAchiev,ID), method="ML"))
-fit1 <- with(implist, lme(LangAchiev ~ 1 + LangDis, random=~ 1|ID,
-  data=data.frame(LangAchiev,LangDis,ID), method="ML"))
+fit0 <- with(implist, lme(ReadAchiev~1, random=~1|ID,
+  data=data.frame(ReadAchiev,ID), method="ML"))
+fit1 <- with(implist, lme(ReadAchiev ~ 1 + ReadDis, random=~ 1|ID,
+  data=data.frame(ReadAchiev,ReadDis,ID), method="ML"))
 
 # multiparameter hypothesis test using D3
 testModels(fit1, fit0, method="D3")

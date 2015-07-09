@@ -57,13 +57,13 @@ Li, K. H., Raghunathan, T. E., & Rubin, D. B. (1991). Large-sample significance 
 \examples{
 data(studentratings)
 
-fml <- MathDis + LangDis + SchClimate ~ (1|ID)
+fml <- MathDis + ReadDis + SchClimate ~ (1|ID)
 imp <- panImpute(studentratings, formula=fml, n.burn=1000, n.iter=100, m=5)
 
 implist <- mitmlComplete(imp, print=1:5)
 
 # fit simple regression model
-fit.lm <- with(implist, lm(SchClimate ~ LangDis + MathDis))
+fit.lm <- with(implist, lm(SchClimate ~ ReadDis + MathDis))
 
 # apply Rubin's rules
 testEstimates(fit.lm)
@@ -71,7 +71,7 @@ testEstimates(fit.lm)
 # * Example 1: test 'identity' function of two parameters
 # multi-parameter hypothesis test, thus equivalent to model comparison
 
-constraints <- c("LangDis","MathDis")
+constraints <- c("ReadDis","MathDis")
 testConstraints(fit.lm, constraints)
 
 # ... adjusting for finite samples
@@ -81,21 +81,21 @@ testConstraints(fit.lm, constraints, df.com=749)
 testConstraints(fit.lm, constraints, method="D2")
 
 # * Example 2: test for equality of two effects
-# tests the hypothesis that the effects of 'LangDis' and 'MathDis'
-# are equal in magnitude (LangDis=MathDis)
+# tests the hypothesis that the effects of 'ReadDis' and 'MathDis'
+# are equal in magnitude (ReadDis=MathDis)
 
-constraints <- c("LangDis-MathDis")
+constraints <- c("ReadDis-MathDis")
 testConstraints(fit.lm, constraints)
 
 # * Example 3: test against a fixed value
-# tests if the effect of "LangDis" is different from one (LangDis=1)
+# tests if the effect of "ReadDis" is different from one (ReadDis=1)
 
-constraints <- c("LangDis-1")
+constraints <- c("ReadDis-1")
 testConstraints(fit.lm, constraints)
 
 # * Example 4: test function of effects
-# tests if the cube of 'LangDis' is different from zero (LangDis^3=0)
+# tests if the cube of 'ReadDis' is different from zero (ReadDis^3=0)
 
-constraints <- c("LangDis^3")
+constraints <- c("ReadDis^3")
 testConstraints(fit.lm, constraints)
 }

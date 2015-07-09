@@ -15,6 +15,7 @@ as.mitml.list(x)
 \value{
 
 The original list with an additional class attribute \code{mitml.list}.
+The list entries are converted to \code{data.frame} if necessary, in which case a note is printed.
 
 }
 \author{Simon Grund}

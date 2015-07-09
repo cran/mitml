@@ -1,4 +1,4 @@
-panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10, group=NULL, prior=NULL, seed=NULL, save.pred=FALSE){
+panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10, group=NULL, prior=NULL, seed=NULL, save.pred=FALSE, silent=FALSE){
 # wrapper function for the Gibbs sampler in the pan package
 
   # *** checks
@@ -10,6 +10,7 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10, group=
   if(!missing(type)) type <- c(type,0)
 
   # address additional grouping
+  grname <- group
   if(!missing(formula)){
     if(is.null(group)){
       group <- rep(1,nrow(data))
@@ -41,8 +42,8 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10, group=
     # responses
     yvrs <- as.character(vrs)[attr(ft,"response")]
     yvrs <- strsplit(yvrs, split="[[:blank:]]*[[:punct:]][[:blank:]]*")[[1]]
-    # reorder: needed for indicator matrix
-    yvrs <- yvrs[na.omit(match(colnames(data),yvrs))]
+    # order of formula terms in data: needed for indicator matrix
+    # yord <- sapply(yvrs, function(x) which(colnames(data)==x))
   
     # cluster id
     clt <- tl[grep("\\|",tl)]
@@ -115,6 +116,10 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10, group=
 
   }
 
+  # reorder data
+  cc <- which(colnames(data) %in% c(clname,grname,yvrs))
+  data.ord <- cbind(data[c(clname,grname,yvrs)],data[-cc])
+
   # * * * * * * * * * * * * * * * * * * * *
 
   if(sum(is.na(y))==0) stop("Target variables do not contain any missing data.")
@@ -132,8 +137,8 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10, group=
   rns <- sapply(unique(group), function(x,m) as.integer(runif(m+1,0,10^6)), m=m)
 
   # prepare output
-  ind <- which(is.na(data), arr.ind=TRUE, useNames=FALSE)
-  ind <- ind[ ind[,2] %in% which(colnames(data)%in%colnames(y)), ]
+  ind <- which(is.na(data.ord), arr.ind=TRUE, useNames=FALSE)
+  ind <- ind[ ind[,2] %in% which(colnames(data.ord)%in%colnames(y)), ]
   rpm <- matrix(NA, nrow(ind), m)
 
   ng <- length(unique(group))
@@ -148,8 +153,10 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10, group=
                sigma=array( NA, c(nr,nr,n.iter*m,ng) ))
   
   # burn-in
-  cat("Runnin burn-in phase ...\n")
-  flush.console()
+  if(!silent){
+    cat("Running burn-in phase ...\n")
+    flush.console()
+  }
   glast <- as.list(unique(group))
   for(gg in unique(group)){
 
@@ -169,8 +176,10 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10, group=
   
   # imputation
   for(ii in 1:m){
-    cat("Creating imputed data set (",ii,"/",m,") ...\n")
-    flush.console()
+    if(!silent){
+      cat("Creating imputed data set (",ii,"/",m,") ...\n")
+      flush.console()
+    }
 
     gy.imp <- as.list(unique(group))
     for(gg in unique(group)){
@@ -195,19 +204,22 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10, group=
     rpm[,ii] <- y.imp[is.na(y)]
 
   }
-  cat("Done!\n")
+
+  if(!silent){
+    cat("Done!\n")
+  }
 
   # clean up
-  srt <- data[,ncol(data)]
-  data=data[,-ncol(data)]
+  srt <- data.ord[,ncol(data.ord)]
+  data.ord <- data.ord[,-ncol(data.ord)]
 
   # prepare output data
-  if(save.pred) data <- cbind(data,mm[psave])
-  attr(data,"sort") <- srt
-  attr(data,"group") <- group.original
+  if(save.pred) data.ord <- cbind(data.ord,mm[psave])
+  attr(data.ord,"sort") <- srt
+  attr(data.ord,"group") <- group.original
 
   out <- list(
-    data=data,
+    data=data.ord,
     replacement.mat=rpm,
     index.mat=ind,
     call=match.call(),

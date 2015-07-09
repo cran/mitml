@@ -12,9 +12,9 @@ print.mitml <- function(x,...){
   cat("Fixed effect predictors:\t", vrs$pvrs, collapse="\n")
   cat("Random effect predictors:\t", vrs$qvrs, collapse="\n")
 
-  cat("\nPerformed", itr$burn, "burn-in iterations, and generated", itr$m, 
-      "imputed data sets,\neach", itr$iter,"iterations apart.",
-      if(ngr>1){c("\nImputations were carried out seperately within", ngr, "groups.\n")},"\n")
+  cat("\nPerformed", sprintf("%.0f",itr$burn), "burn-in iterations, and generated", sprintf("%.0f",itr$m),
+      "imputed data sets,\neach", sprintf("%.0f",itr$iter), "iterations apart.",
+      if(ngr>1){c("\nImputations were carried out seperately within", sprintf("%.0f",ngr), "groups.\n")},"\n")
 
   invisible()
 }

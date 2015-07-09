@@ -42,7 +42,7 @@ However, the two functions return different values (see below).
 \examples{
 data(studentratings)
 
-fml <- LangDis + SES ~ LangAchiev + (1|ID)
+fml <- ReadDis + SES ~ ReadAchiev + (1|ID)
 imp <- panImpute(studentratings, formula=fml, n.burn=1000, n.iter=100, m=5)
 
 implist <- mitmlComplete(imp, print=1:5)
@@ -50,7 +50,7 @@ implist <- mitmlComplete(imp, print=1:5)
 # * Example 1: data manipulation
 
 # calculate and save cluster means
-new1.implist <- within(implist, Means.LangAchiev <- clusterMeans(LangAchiev, ID))
+new1.implist <- within(implist, Means.ReadAchiev <- clusterMeans(ReadAchiev, ID))
 
 # calculate interaction terms
 new2.implist <- within(implist, int.SesCa <- SES*CognAbility )
@@ -58,11 +58,11 @@ new2.implist <- within(implist, int.SesCa <- SES*CognAbility )
 # * Example 2: fitting statistical models
 
 # fit regression model
-fit.lm <- with(implist, lm(LangAchiev ~ LangDis))
+fit.lm <- with(implist, lm(ReadAchiev ~ ReadDis))
 
 # fit multilevel model using lme4
 require(lme4)
-fit.lmer <- with(implist, lmer(LangAchiev ~ LangDis + (1|ID)))
+fit.lmer <- with(implist, lmer(ReadAchiev ~ ReadDis + (1|ID)))
 
 # * Example 3: manual extraction of variance estimates
 require(lme4)

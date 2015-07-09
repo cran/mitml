@@ -47,7 +47,7 @@ Muthen, L. K., & Muthen, B. O. (2012). \emph{Mplus User's Guide. Seventh Edition
 \examples{
 data(studentratings)
 
-fml <- LangDis + SES ~ LangAchiev + (1|ID)
+fml <- ReadDis + SES ~ ReadAchiev + (1|ID)
 imp <- panImpute(studentratings, formula=fml, n.burn=1000, n.iter=100, m=5)
 
 # write imputation files, index file, and log file

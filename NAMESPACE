@@ -1,4 +1,9 @@
-import(pan,stats,haven)
+import(stats)
+
+importFrom(graphics,abline,layout,par,plot,plot.new,axTicks,axis,lines,text,title)
+importFrom(grDevices,dev.new,dev.off,devAskNewPage)
+importFrom(utils,flush.console,tail,write.table)
+
 
 export(panImpute,
        mitmlComplete,

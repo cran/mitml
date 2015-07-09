@@ -38,10 +38,10 @@ write.mitmlMplus <- function(x, filename, suffix="list", sep="\t", dec=".", na.v
 
   # log file
   cname <- paste(filename,".log",sep="")
-  cat(file=cname, "The data set featured the following variables:\n\n")
-  cat(file=cname, colnames(out), "\n\n", append=T)
+  cat(file=cname, "The data set featured the following variables:")
+  cat(file=cname, "\n\n", paste(colnames(out),collapse=" "), sep="", append=T)
   if(length(conv)>0){
-    cat(file=cname, "Factors were converted to numeric values as follows:\n", append=T)
+    cat(file=cname, "\n\n", "Factors were converted to numeric values as follows:\n ",sep="", append=T)
     for(cc in 1:length(conv)){ 
       cat(file=cname, "\n", names(conv[cc]), ":\n", sep="", append=T)
       write.table(conv[[cc]],file=cname, row.names=F,col.names=F, sep=" = ", quote=F, append=T)

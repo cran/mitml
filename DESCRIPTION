@@ -1,11 +1,11 @@
 Package: mitml
 Type: Package
 Title: Tools for Multiple Imputation in Multilevel Modeling
-Version: 0.2-2
-Date: 2015-05-23
+Version: 0.2-3
+Date: 2015-07-09
 Author: Simon Grund [aut,cre], Alexander Robitzsch [aut], Oliver Luedtke [aut]
 Maintainer: Simon Grund <grund@ipn.uni-kiel.de>
-Imports: pan, haven
+Imports: pan, haven, grDevices, graphics, stats, utils
 Suggests: lme4, nlme, mice
 LazyData: true
 LazyLoad: true
@@ -14,7 +14,7 @@ Description: Provides tools for multiple imputation of missing data in multileve
  several functions for visualization, data management and the analysis 
  of multiply imputed data sets.
 License: GPL (>= 2)
-Packaged: 2015-05-22 22:08:44 UTC; simon
 NeedsCompilation: no
+Packaged: 2015-07-09 15:22:48 UTC; simon
 Repository: CRAN
-Date/Publication: 2015-05-23 01:34:51
+Date/Publication: 2015-07-09 18:11:25

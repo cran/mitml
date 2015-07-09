@@ -126,7 +126,10 @@
   q <- dim(D)[1]
   y <- split(lme4::getME(object,"y"),cls)
   X <- split(lme4::getME(object,"X"),cls)
-  Z <- split(matrix(lme4::getME(object,"Zt")@x, nrow=length(cls), byrow=T),cls)
+  # testing: via mmList, for single level of clustering
+  Z <- split(lme4::getME(object,"mmList")[[1]],cls)
+  # outdated: via sparse model matrix (produces bug due to zero elements)
+  # Z <- split(matrix(lme4::getME(object,"Zt")@x, nrow=length(cls), byrow=T),cls)
 
   L <- numeric(nlevels(cls))
   for(i in levels(cls)){

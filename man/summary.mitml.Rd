@@ -46,13 +46,10 @@ Gelman, A., and Rubin, D. B. (1992). Inference from iterative simulation using m
 \examples{
 data(studentratings)
 
-fml <- LangDis + SES ~ LangAchiev + (1|ID)
+fml <- ReadDis + SES ~ ReadAchiev + (1|ID)
 imp <- panImpute(studentratings, formula=fml, n.burn=1000, n.iter=100, m=5)
 
 # print summary
 summary(imp)
-
-# internal structure of the summary-object
-str(summary(imp))
 }
 \keyword{methods}

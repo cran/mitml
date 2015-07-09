@@ -56,7 +56,7 @@ Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}. Hobo
 \examples{
 data(studentratings)
 
-fml <- LangDis + SES ~ LangAchiev + (1|ID)
+fml <- ReadDis + SES ~ ReadAchiev + (1|ID)
 imp <- panImpute(studentratings, formula=fml, n.burn=1000, n.iter=100, m=5)
 
 implist <- mitmlComplete(imp, print=1:5)

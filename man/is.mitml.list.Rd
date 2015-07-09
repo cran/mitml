@@ -31,7 +31,7 @@ l <- as.list(1:10)
 is.mitml.list(l)
 # FALSE
 
-l <- as.mitml.list(l)
+class(l) <- "mitml.list"
 is.mitml.list(l)
 # TRUE, with a warning
 }

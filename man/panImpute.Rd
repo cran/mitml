@@ -7,7 +7,7 @@ Imputations can be generated using \code{type} or \code{formula}, which offer di
 \usage{
 
 panImpute(data, type, formula, n.burn=5000, n.iter=100, m=10, group=NULL, 
-  prior=NULL, seed=NULL, save.pred=FALSE)
+  prior=NULL, seed=NULL, save.pred=FALSE, silent=FALSE)
 
 }
 
@@ -23,6 +23,7 @@ panImpute(data, type, formula, n.burn=5000, n.iter=100, m=10, group=NULL,
   \item{prior}{(optional) A list with components \code{a}, \code{Binv}, \code{c}, and \code{Dinv} for specifying prior distributions for the covariance matrix of random effects and the covariance matrix of residuals (see details). Default is to using least-informative priors.}
   \item{seed}{(optional) An integer value initializing \code{pan}'s random number generator for reproducible results. Default is to using random seeds.}
   \item{save.pred}{(optional) Logical flag indicating if variables derived using \code{formula} should be included in the imputed data sets. Default is to \code{FALSE}.}
+  \item{silent}{(optional) Logical flag indicating if console output should be suppressed. Default is to \code{FALSE}.}
 
 }
 
@@ -56,6 +57,7 @@ Given below is a list of operators that \code{panImpute} currently understands:
 }
 Predictors are allowed to have fixed effects, random effects or both on all target variables.
 The intercept is automatically included both as a fixed and random effect, but it can be constrained if necessary (see examples).
+Note that, when specifying random effects other than the intercept, these will \emph{not} be automatically added as fixed effects and must be included explicitly.
 Any predictors defined by \code{I()} will be used for imputation but not included in the data set unless \code{save.pred=TRUE}.
 
 In order to run separate imputation models for an additional grouping variable, the \code{group} argument may be used.
@@ -111,33 +113,30 @@ data(studentratings)
 # the 'type' interface
 # 
 
-# * Example 1.1: imputation of 'LangDis' and 'SES', predicted by 'LangAchiev'
+# * Example 1.1: imputation of 'ReadDis' and 'SES', predicted by 'ReadAchiev'
 
 type <- c(-2,0,0,0,0,0,2,1,0,0)
 names(type) <- colnames(studentratings)
 type
 
-fml <- LangDis + SES ~ LangAchiev + (1|ID)
 imp <- panImpute(studentratings, type=type, n.burn=1000, n.iter=100, m=5)
 
-# * Example 1.2: 'LangDis' and 'SES', predicted by 'LangAchiev' and 
-# 'CognAbility', with random slope for 'LangAchiev'
+# * Example 1.2: 'ReadDis' and 'SES', predicted by 'ReadAchiev' and 
+# 'CognAbility', with random slope for 'ReadAchiev'
 
 type <- c(-2,0,0,0,0,0,3,1,2,0)
 names(type) <- colnames(studentratings)
 type
 
-fml <- LangDis + SES ~ LangAchiev + (1|ID)
 imp <- panImpute(studentratings, type=type, n.burn=1000, n.iter=100, m=5)
 
-# * Example 1.3: 'LangDis' and 'SES' groupwise for 'FedState',
-# and predicted by 'LangAchiev'
+# * Example 1.3: 'ReadDis' and 'SES' groupwise for 'FedState',
+# and predicted by 'ReadAchiev'
 
 type <- c(-2,-1,0,0,0,0,2,1,0,0)
 names(type) <- colnames(studentratings)
 type
 
-fml <- LangDis + SES ~ LangAchiev + (1|ID)
 imp <- panImpute(studentratings, type=type, n.burn=1000, n.iter=100, m=5)
 
 
@@ -145,37 +144,37 @@ imp <- panImpute(studentratings, type=type, n.burn=1000, n.iter=100, m=5)
 # the 'formula' interface
 # 
 
-# * Example 2.1: imputation of 'LangDis', predicted by 'LangAchiev'
+# * Example 2.1: imputation of 'ReadDis', predicted by 'ReadAchiev'
 # (random intercept)
 
-fml <- LangDis ~ LangAchiev + (1|ID)
+fml <- ReadDis ~ ReadAchiev + (1|ID)
 imp <- panImpute(studentratings, formula=fml, n.burn=1000, n.iter=100, m=5)
 
 # ... the intercept can be suppressed using '0' or '-1' (here for fixed intercept)
-fml <- LangDis ~ 0 + LangAchiev + (1|ID)
+fml <- ReadDis ~ 0 + ReadAchiev + (1|ID)
 imp <- panImpute(studentratings, formula=fml, n.burn=1000, n.iter=100, m=5)
 
-# * Example 2.2: imputation of 'LangDis', predicted by 'LangAchiev'
+# * Example 2.2: imputation of 'ReadDis', predicted by 'ReadAchiev'
 # (random slope)
 
-fml <- LangDis ~ LangAchiev + (1+LangAchiev|ID)
+fml <- ReadDis ~ ReadAchiev + (1+ReadAchiev|ID)
 imp <- panImpute(studentratings, formula=fml, n.burn=1000, n.iter=100, m=5)
 
-# * Example 2.3: imputation of 'LangDis', predicted by 'LangAchiev',
+# * Example 2.3: imputation of 'ReadDis', predicted by 'ReadAchiev',
 # groupwise for 'FedState'
 
-fml <- LangDis ~ LangAchiev + (1|ID)
+fml <- ReadDis ~ ReadAchiev + (1|ID)
 imp <- panImpute(studentratings, formula=fml, group="FedState", n.burn=1000,
 n.iter=100, m=5)
 
-# * Example 2.4: imputation of 'LangDis', predicted by 'LangAchiev'
-# including the cluster mean of 'LangAchiev' as an additional predictor
+# * Example 2.4: imputation of 'ReadDis', predicted by 'ReadAchiev'
+# including the cluster mean of 'ReadAchiev' as an additional predictor
 
-fml <- LangDis ~ LangAchiev + I(clusterMeans(LangAchiev,ID)) + (1|ID)
+fml <- ReadDis ~ ReadAchiev + I(clusterMeans(ReadAchiev,ID)) + (1|ID)
 imp <- panImpute(studentratings, formula=fml, n.burn=1000, n.iter=100, m=5)
 
 # ... using 'save.pred' to save the calculated cluster means in the data set
-fml <- LangDis ~ LangAchiev + I(clusterMeans(LangAchiev,ID)) + (1|ID)
+fml <- ReadDis ~ ReadAchiev + I(clusterMeans(ReadAchiev,ID)) + (1|ID)
 imp <- panImpute(studentratings, formula=fml, n.burn=1000, n.iter=100, m=5,
 save.pred=TRUE)
 
