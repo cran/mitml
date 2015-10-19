@@ -124,7 +124,6 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
       m <- length(model)
       k <- attr(dW,"df")
       if(is.null(k)) stop("Degrees of freedom for the model comparison could not be detected.")
-      if(attr(dW,"REML")) stop("Using the 'likelihood' based 'D2' method is currently not supported for REML fits. Please refit using ML.")
   
     }
 

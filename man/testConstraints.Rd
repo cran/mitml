@@ -7,12 +7,13 @@ Performs hypothesis tests for arbitrary functions of a parameter vector using th
 
 \usage{
 
-testConstraints(model, constraints, method=c("D1","D2"), df.com=NULL)
+testConstraints(model, qhat, uhat, constraints, method=c("D1","D2"), df.com=NULL)
 
 }
 \arguments{
 
   \item{model}{A list of fitted statistical models (see examples).}
+  \item{qhat, uhat}{Two matrices/arrays or lists containing estimates of the parameter vector and its covariance matrix, respectively, for each imputed data set (see examples).}
   \item{constraints}{A character vector specifying constraints or functions of the vector of model parameters to be tested.}
   \item{method}{A character string denoting the method by which the test is performed. Can be either \code{"D1"} or \code{"D2"} (see details). Default is to \code{"D1"}.}
   \item{df.com}{(optional) A single number or a numeric vector denoting the complete-data degrees of freedom for the hypothesis test. Only used if \code{method="D1"}.}
@@ -23,6 +24,7 @@ testConstraints(model, constraints, method=c("D1","D2"), df.com=NULL)
 This function is similar in functionality to \code{testModels} but extended to arbitrary functions (or constraints) of the model parameters.
 The function is based on the Delta method (e.g., Casella & Berger, 2002) according to which any function of the model parameters can be tested using Wald-like methods.
 It is assumed that the parameters can be extracted using \code{coef} and \code{vcov} methods (or similar; e.g., regression coefficients, fixed effects in multilevel models)
+Alternatively, hypothesis tests can be carried out using user-supplied matrices/arrays or lists (\code{qhat} and \code{uhat}, see examples).
 
 Constraints and functions of the model parameters can be specified in the \code{constraints} argument.
 The constraints must be supplied as a character vector, where each string denotes a function or a constraint to be tested (see examples).
@@ -33,6 +35,7 @@ The Wald-like tests can be aggregated across data sets either by method \eqn{D_1
 For \eqn{D_1}, the complete-data degrees of freedom can be adjusted for smaller samples by specifying \code{df.com}.
 
 Currently, the procedure supports statistical models that define \code{coef} and \code{vcov} methods (e.g., \code{lm}) and multilevel models estimated with \code{lme4} or \code{nlme}.
+The arguments \code{qhat} and \code{uhat} allow for quite general hypothesis tests regardless of model class.
 Support for further models may be added in future releases.
 
 }
@@ -69,33 +72,36 @@ fit.lm <- with(implist, lm(SchClimate ~ ReadDis + MathDis))
 testEstimates(fit.lm)
 
 # * Example 1: test 'identity' function of two parameters
-# multi-parameter hypothesis test, thus equivalent to model comparison
+# multi-parameter hypothesis test, equivalent to model comparison
 
-constraints <- c("ReadDis","MathDis")
-testConstraints(fit.lm, constraints)
+cons <- c("ReadDis","MathDis")
+testConstraints(fit.lm, constraints=cons)
 
 # ... adjusting for finite samples
-testConstraints(fit.lm, constraints, df.com=749)
+testConstraints(fit.lm, constraints=cons, df.com=749)
 
 # ... using D2
-testConstraints(fit.lm, constraints, method="D2")
+testConstraints(fit.lm, constraints=cons, method="D2")
 
 # * Example 2: test for equality of two effects
 # tests the hypothesis that the effects of 'ReadDis' and 'MathDis'
-# are equal in magnitude (ReadDis=MathDis)
+# are equal (ReadDis=MathDis)
 
-constraints <- c("ReadDis-MathDis")
-testConstraints(fit.lm, constraints)
+cons <- c("ReadDis-MathDis")
+testConstraints(fit.lm, constraints=cons)
 
 # * Example 3: test against a fixed value
-# tests if the effect of "ReadDis" is different from one (ReadDis=1)
+# tests the hypothesis that the effect of "ReadDis" is one (ReadDis=1)
 
-constraints <- c("ReadDis-1")
-testConstraints(fit.lm, constraints)
+cons <- c("ReadDis-1")
+testConstraints(fit.lm, constraints=cons)
 
-# * Example 4: test function of effects
-# tests if the cube of 'ReadDis' is different from zero (ReadDis^3=0)
+# * Example 4: test 'identity' using arrays and list
 
-constraints <- c("ReadDis^3")
-testConstraints(fit.lm, constraints)
+fit.lm <- with(implist, lm(SchClimate ~ ReadDis + MathDis))
+
+cons <- c("ReadDis","MathDis")
+qhat <- sapply(fit.lm, coef)
+uhat <- sapply(fit.lm, function(x) vcov(x), simplify="array")
+testConstraints(qhat=qhat, uhat=uhat, constraints=cons)
 }

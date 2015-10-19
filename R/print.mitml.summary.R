@@ -6,7 +6,9 @@ print.mitml.summary <- function(x,...){
   itr <- x$iter
   ngr <- x$ngr
   mdr <- x$missing.rates
-  Rhat <- x$Rhat
+  conv <- x$conv
+
+  # print general information
   cat("\nCall:\n", paste(deparse(cl)), sep="\n")
   cat("\n")
 
@@ -19,25 +21,37 @@ print.mitml.summary <- function(x,...){
       "imputed data sets,\neach", sprintf("%.0f",itr$iter), "iterations apart.",
       if(ngr>1){c("\nImputations were carried out seperately within", sprintf("%.0f",ngr), "groups.")},"\n")
 
-  Rhatout <- matrix(c( sapply(Rhat, function(z) min(z[,"Rhat"])),
-             sapply(Rhat, function(z) quantile(z[,"Rhat"],.25)),
-             sapply(Rhat, function(z) mean(z[,"Rhat"])),
-             sapply(Rhat, function(z) median(z[,"Rhat"])),
-             sapply(Rhat, function(z) quantile(z[,"Rhat"],.75)),
-             sapply(Rhat, function(z) max(z[,"Rhat"])) ), ncol=6 )
-  rownames(Rhatout) <- c("Beta:","Psi:","Sigma:")
-  colnames(Rhatout) <- c("Min","25%","Mean","Median","75%","Max")
-  cat("\nPotential scale reduction (Rhat, imputation phase):\n")
-  print.table(round(Rhatout,3))
+  # print convergence diagnostics
+  if(!is.null(conv)){
 
-  cat("\nLargest potential scale reduction (Rhat):\n")
-  maxb <- Rhat$beta[which.max(Rhat$beta[,4]),]
-  maxp <- Rhat$psi[which.max(Rhat$psi[,4]),]
-  maxs <- Rhat$sigma[which.max(Rhat$sigma[,4]),]
-  cat("Beta: [", paste(maxb[1:2],collapse=",") ,"], ",
-      "Psi: [", paste(maxp[1:2],collapse=",") ,"], ",
-      "Sigma: [", paste(maxs[1:2],collapse=",") ,"]\n", sep="")
+    for(cc in attr(conv,"stats")){
 
+      cout <- matrix(c( sapply(conv, function(z) min(z[,cc])),
+                sapply(conv, function(z) quantile(z[,cc],.25)),
+                sapply(conv, function(z) mean(z[,cc])),
+                sapply(conv, function(z) median(z[,cc])),
+                sapply(conv, function(z) quantile(z[,cc],.75)),
+                sapply(conv, function(z) max(z[,cc])) ), ncol=6 )
+      rownames(cout) <- c("Beta:","Psi:","Sigma:")
+      colnames(cout) <- c("Min","25%","Mean","Median","75%","Max")
+      clab <- switch(cc, Rhat="\nPotential scale reduction (Rhat, imputation phase):\n",
+                         SDprop="\nGoodness of approximation (imputation phase):\n")
+      cat(clab,"\n")
+      print.table(round(cout,3))
+
+      clab <- switch(cc, Rhat="\nLargest potential scale reduction:\n",
+                         SDprop="\nPoorest approximation:\n")
+      cat(clab)
+      maxb <- conv$beta[which.max(conv$beta[,cc]),]
+      maxp <- conv$psi[which.max(conv$psi[,cc]),]
+      maxs <- conv$sigma[which.max(conv$sigma[,cc]),]
+      cat("Beta: [", paste(maxb[1:2],collapse=",") ,"], ",
+          "Psi: [", paste(maxp[1:2],collapse=",") ,"], ",
+          "Sigma: [", paste(maxs[1:2],collapse=",") ,"]\n", sep="")
+    }
+  }
+
+  # missing data rates
   mdrout <- t(as.matrix(mdr))
   rownames(mdrout) <- "MD%"
   cat("\nMissing data per variable:\n")

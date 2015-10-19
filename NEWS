@@ -1,18 +1,35 @@
 # * RELEASE HISTORY OF THE 'mitml' PACKAGE:
 --
 
+# Version 0.2-4 (2015-10-19)
+--
+
+* clusterMeans:    code improvements
+
+* panImpute:       code improvements
+
+* testConstraints: added features (model-independent input)
+
+* testEstimates:   added features (model-independent input)
+
+* testModels:      comparisons of REML fits through D2 is now permitted
+
+* summary:         bugfix (n.Rhat now takes effect), added features (goodness
+                   of approximation)
+
+
 # Version 0.2-3 (2015-07-09)
 --
 
-* panImpute:    added features (silent mode), bugfix (ordering of variables
-                with nonstandard priors)
+* panImpute:       added features (silent mode), bugfix (ordering of variables
+                   with nonstandard priors)
 
-* summary:      added features (details on PSR)
+* summary:         added features (details on PSR)
 
-* plot:         revised layout, added features (trend line, posterior summary),
-                bugfix (plot labels)
+* plot:            revised layout, added features (trend line, posterior 
+                   summary), bugfix (plot labels)
 
-* testModels:   bugfix (structural zeros in lmer objects)
+* testModels:      bugfix (structural zeros in lmer objects)
 
 * studentratings:  renamed variable (data set)
 

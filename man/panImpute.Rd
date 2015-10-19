@@ -113,15 +113,7 @@ data(studentratings)
 # the 'type' interface
 # 
 
-# * Example 1.1: imputation of 'ReadDis' and 'SES', predicted by 'ReadAchiev'
-
-type <- c(-2,0,0,0,0,0,2,1,0,0)
-names(type) <- colnames(studentratings)
-type
-
-imp <- panImpute(studentratings, type=type, n.burn=1000, n.iter=100, m=5)
-
-# * Example 1.2: 'ReadDis' and 'SES', predicted by 'ReadAchiev' and 
+# * Example 1.1: 'ReadDis' and 'SES', predicted by 'ReadAchiev' and 
 # 'CognAbility', with random slope for 'ReadAchiev'
 
 type <- c(-2,0,0,0,0,0,3,1,2,0)
@@ -130,7 +122,7 @@ type
 
 imp <- panImpute(studentratings, type=type, n.burn=1000, n.iter=100, m=5)
 
-# * Example 1.3: 'ReadDis' and 'SES' groupwise for 'FedState',
+# * Example 1.2: 'ReadDis' and 'SES' groupwise for 'FedState',
 # and predicted by 'ReadAchiev'
 
 type <- c(-2,-1,0,0,0,0,2,1,0,0)
@@ -138,7 +130,6 @@ names(type) <- colnames(studentratings)
 type
 
 imp <- panImpute(studentratings, type=type, n.burn=1000, n.iter=100, m=5)
-
 
 # *** ................................
 # the 'formula' interface

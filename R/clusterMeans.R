@@ -11,14 +11,19 @@ clusterMeans <- function(x, cluster, adj=FALSE, group=NULL){
     if(isname[3]) group <- eval(parse(text=group),parent)
   }
 
+  # prepare group
   if(!is.null(group)) {
-    if(!is.factor(group)) group <- factor(group)
-    glv <- length(unique(group))+1
-    cluster <- as.numeric(cluster) + as.numeric(group)/glv
-  }else{
-    cluster <- as.numeric(cluster)
+    if(is.character(group)) group <- as.factor(group)
+    if(is.factor(group)) group <- as.integer(group)
+    ngr <- length(unique(group))
   }
-  cluster <- as.numeric(as.factor(cluster))
+
+  # format cluster (and groups)
+  if(!is.numeric(cluster)) cluster <- as.integer(cluster)
+  if(!is.null(group)) cluster <- cluster + group/(ngr+1)
+  cluster <- match(cluster, unique(cluster)) 
+
+
   n.obs <- rowsum(as.integer(!is.na(x)), cluster)
   gm <- rowsum(x, cluster, na.rm = T)/n.obs
   gm[is.nan(gm)] <- NA

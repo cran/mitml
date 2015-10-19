@@ -1,4 +1,4 @@
-summary.mitml <- function(object,n.Rhat=3,...){
+summary.mitml <- function(object, n.Rhat=3, goodness.of.appr=FALSE,...){
 # summary method for objects of class "mitml"
 
   inc <- object$data
@@ -10,46 +10,40 @@ summary.mitml <- function(object,n.Rhat=3,...){
   mdr[] <- sprintf(mdr*100,fmt="%.1f")
   mdr <- gsub("^0.0$","0",mdr)
 
-  # potential scale reduction
+  # convergence
+  conv <- NULL
   iter <- dim(prm[[1]])[3]
-  mod <- iter %% n.Rhat
-  n <- rep( (iter-mod) / n.Rhat , n.Rhat)
-  nmat <- matrix(c(cumsum(n) - n + 1, cumsum(n)), nrow=n.Rhat)
-  m <- object$iter$m
-  n <- n[1]
+  Rhat <- ifelse(is.null(n.Rhat), FALSE, n.Rhat >= 2)
 
-  Rhat.list <- list(beta=NULL,psi=NULL,sigma=NULL)
-  for(pp in c("beta","psi","sigma")){
-    ni <- dim(prm[[pp]])[1]
-    nj <- dim(prm[[pp]])[2]
-    nl <- dim(prm[[pp]])[4]
-    Rhat.mat <- matrix(NA,0,4)
+  SDprop <- goodness.of.appr
+  if(Rhat|SDprop){
 
-    for(ii in 1:ni){
-    for(jj in 1:nj){
-    for(ll in 1:nl){
+    conv <- list(beta=NULL,psi=NULL,sigma=NULL)
+    for(pp in c("beta","psi","sigma")){
 
-      chains <- apply(nmat, 1, function(x) prm[[pp]][ii,jj,x[1]:x[2],ll])
+      ni <- dim(prm[[pp]])[1]
+      nj <- dim(prm[[pp]])[2]
+      nl <- dim(prm[[pp]])[4]
+      cmat <- matrix(NA_real_, ni*nj*nl, 3+Rhat+SDprop)
+      cmat[,1] <- rep(1:ni,nj*nl)
+      cmat[,2] <- rep(1:nj,each=ni,times=nl)
+      cmat[,3] <- rep(1:nl,each=ni*nj)
+      colnames(cmat) <- c("i1","i2","grp",if(Rhat) "Rhat",if(SDprop) "SDprop")
 
-      # values per chain
-      mns <- apply(chains,2,mean)
-      vrs <- apply(chains,2,var)
-      Bdivn <- var(mns)
-      W <- mean(vrs)
-      muhat <- mean(chains)
-      sighat2 <- (n-1)/n * W + Bdivn
-      # sampling distribution
-      Vhat <- sighat2 + Bdivn/m
-      var.Vhat <- ((n-1)/n)^2*(1/m)*var(vrs) + ((m+1)/(m*n))^2*2/(m-1)*(Bdivn*n)^2 +
-                  2*((m+1)*(n-1)/(m*n^2)) * (n/m)*(cov(vrs,mns^2)-2*muhat*cov(vrs,mns))
-      df <- 2*Vhat^2 / var.Vhat
-      # compute Rhat
-      Rhat <- sqrt( (Vhat/W)*df/(df-2) )
-      Rhat.mat <- rbind(Rhat.mat, c(ii,jj,ll,Rhat))
+      for(ll in 1:nl){
 
-    }}}
-    colnames(Rhat.mat) <- c("i1","i2","grp","Rhat")
-    Rhat.list[[pp]] <- Rhat.mat
+        lind <- cmat[,3]==ll
+        chains <- matrix(prm[[pp]][,,,ll], ni*nj, iter)
+        # potential scale reduction (Rhat)
+        if(Rhat) cmat[lind,"Rhat"] <- .GelmanRubin(chains,n.Rhat)
+        # goodness of approximation
+        if(SDprop) cmat[lind,"SDprop"] <- .SDprop(chains)
+      
+      }
+      conv[[pp]] <- cmat
+    }
+
+  attr(conv,"stats") <- c("Rhat","SDprop")[c(Rhat,SDprop)]
   }
 
   smr <- list(
@@ -59,7 +53,7 @@ summary.mitml <- function(object,n.Rhat=3,...){
     iter=object$iter,
     ngr=ngr,
     missing.rates=mdr,
-    Rhat=Rhat.list
+    conv=conv
   )
   
   class(smr) <- "mitml.summary"

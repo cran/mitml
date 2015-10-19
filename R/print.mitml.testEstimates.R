@@ -15,17 +15,19 @@ print.mitml.testEstimates <- function(x,...){
   cat("\n")
 
   # print results
-  val <- sprintf("%.3f",est)
-  w <- max(sapply(c(colnames(est),val),nchar))
-  out <- matrix("",nrow(est)+1,ncol(est)+1)
-  out[,1] <- format(c("",rownames(est)))
-  out[1,-1] <- format(colnames(est),justify="right",width=w)
-  out[-1,-1] <- format(val,justify="right",width=w)
+  if(!is.null(est)){
+    val <- sprintf("%.3f",est)
+    w <- max(sapply(c(colnames(est),val),nchar))
+    out <- matrix("",nrow(est)+1,ncol(est)+1)
+    out[,1] <- format(c("",rownames(est)))
+    out[1,-1] <- format(colnames(est),justify="right",width=w)
+    out[-1,-1] <- format(val,justify="right",width=w)
   
-  for(i in 1:nrow(out)) cat(out[i,],"\n")
+    for(i in 1:nrow(out)) cat(out[i,],"\n")
+  }
 
   if(!is.null(vc)){
-    cat("\n")
+    if(!is.null(est)) cat("\n")
 
     val <- sprintf("%.3f",vc)
     w <- max(sapply(c("Estimate",val),nchar))

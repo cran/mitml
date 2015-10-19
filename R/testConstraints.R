@@ -1,8 +1,7 @@
-testConstraints <- function(model, constraints, method=c("D1","D2"), df.com=NULL){
+testConstraints <- function(model, qhat, uhat, constraints, method=c("D1","D2"), df.com=NULL){
 # test constraints with multiply imputed data
   
-  # input list
-  if(!"list"%in%class(model)) stop("The 'model' argument must be a list of fitted statistical models.")
+  if(missing(model)==(missing(qhat)|missing(uhat))) stop("Either 'model' or both 'qhat' and 'uhat' must be supplied.")
 
   # match methods
   if(!missing(method) & length(method)>1) stop("Only one of 'D1' or 'D2' may be supplied as 'method'.")
@@ -13,42 +12,78 @@ testConstraints <- function(model, constraints, method=c("D1","D2"), df.com=NULL
   # warnings for ignored arguments
   if(!is.null(df.com) & method=="D2") warning("Setting complete-data degrees of freedom is only available for 'D1' and will be ignored with 'D2'.")
 
-  # ***
-  # select extraction methods
-  cls <- class(model[[1]])
+  if(!missing(qhat)){
 
-  # default method
-  coef.method <- "default"
+    coef.method <- "default"
+    if(missing(uhat)) stop("Either 'model' or both 'qhat' and 'uhat' must be supplied.")
 
-  # merMod (lme4)
-  if(length(grep("merMod",cls)) > 0 & coef.method=="default"){
-    if(!requireNamespace("lme4", quietly=TRUE)) stop("The 'lme4' package must be installed to handle 'merMod' class objects.")
-    coef.method <- "lmer"
+    if(length(dim(qhat))==3) qhat <- apply(qhat,3,identity)
+
+    if(is.list(qhat)){
+      Qhat <- sapply(qhat, identity)
+      Uhat <- sapply(uhat, identity, simplify="array")
+    }else{
+      Qhat <- qhat
+      Uhat <- uhat
+    }
+    if(is.null(dim(Qhat))){ 
+      dim(Qhat) <- c(1,length(qhat))
+      nms <- if(is.list(qhat)) names(qhat[[1]]) else if(is.matrix(qhat)) rownames(qhat) else names(qhat)[1]
+      dimnames(Qhat) <- list(nms, NULL)
+    }
+    if(is.null(dim(Uhat))) dim(Uhat) <- c(1,1,length(qhat))
+    if(is.null(rownames(Qhat))){
+      nms <- !sapply(dimnames(Uhat),is.null)
+      nms <- dimnames(Uhat)[[min(which(nms))]]
+      rownames(Qhat) <- nms
+    }
+    m <- dim(Qhat)[2]
+    p <- dim(Qhat)[1]
+    k <- q <- length(cons)
+
   }
+
+  if(!missing(model)){
+
+    if(!"list"%in%class(model)) stop("The 'model' argument must be a list of fitted statistical models.")
+
+    # ***
+    # select extraction methods
+    cls <- class(model[[1]])
+
+    # default method
+    coef.method <- "default"
+
+    # merMod (lme4)
+    if(length(grep("merMod",cls)) > 0 & coef.method=="default"){
+      if(!requireNamespace("lme4", quietly=TRUE)) stop("The 'lme4' package must be installed to handle 'merMod' class objects.")
+      coef.method <- "lmer"
+    }
   
-  # lme (nlme)
-  if(length(grep("lme",cls)) > 0 & coef.method=="default"){
-    if(!requireNamespace("nlme", quietly=TRUE)) stop("The 'nlme' package must be installed to handle 'lme' class objects.")
-    coef.method <- "nlme"
+    # lme (nlme)
+    if(length(grep("lme",cls)) > 0 & coef.method=="default"){
+      if(!requireNamespace("nlme", quietly=TRUE)) stop("The 'nlme' package must be installed to handle 'lme' class objects.")
+      coef.method <- "nlme"
+    }
+
+    fe <- switch(coef.method,
+      lmer=.getCOEF.lmer(model),
+      nlme=.getCOEF.nlme(model),
+      default=.getCOEF.default(model)
+    )
+
+    m <- length(model)
+    Qhat <- fe$Qhat
+    Uhat <- fe$Uhat
+    if(is.null(dim(Qhat))) dim(Qhat) <- c(1,m)
+    if(is.null(dim(Uhat))) dim(Uhat) <- c(1,1,m)
+    p <- dim(Qhat)[1]
+    k <- q <- length(cons)
+
   }
-
-  fe <- switch(coef.method,
-    lmer=.getCOEF.lmer(model),
-    nlme=.getCOEF.nlme(model),
-    default=.getCOEF.default(model)
-  )
-
-  m <- length(model)
-  Qhat <- fe$Qhat
-  Uhat <- fe$Uhat
-  if(is.null(dim(Qhat))) dim(Qhat) <- c(1,m)
-  if(is.null(dim(Uhat))) dim(Uhat) <- c(1,1,m)
-  p <- dim(Qhat)[1]
-  k <- q <- length(cons)
 
   newQhat <- array(NA, dim=c(q,m))
   newUhat <- array(NA, dim=c(q,q,m))
-
 
   # *** delta method
   for(ii in 1:m){
@@ -78,7 +113,7 @@ testConstraints <- function(model, constraints, method=c("D1","D2"), df.com=NULL
     newUhat[,,ii] <- newSigma
 
   }
-  
+ 
   # *** aggregation
   if(method=="D1"){
 

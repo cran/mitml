@@ -41,6 +41,7 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10, group=
   
     # responses
     yvrs <- as.character(vrs)[attr(ft,"response")]
+    yvrs <- gsub("[\r\n]","",yvrs)
     yvrs <- strsplit(yvrs, split="[[:blank:]]*[[:punct:]][[:blank:]]*")[[1]]
     # order of formula terms in data: needed for indicator matrix
     # yord <- sapply(yvrs, function(x) which(colnames(data)==x))
@@ -49,7 +50,7 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10, group=
     clt <- tl[grep("\\|",tl)]
     if(length(clt)==0) stop("Cluster indicator not found in formula\n\n",formula,"\n\nPlease specify the cluster indicator and at least one random term using the '|' operator.")
     clt <- strsplit( clt, split="[[:blank:]]*\\|[[:blank:]]*" )[[1]]
-    clus <- clname <- clt[2]
+    clname <- clt[2]
 
     # order data
     data <- data[ order(group,data[,clname]), ]
@@ -79,13 +80,12 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10, group=
     psave <- all.pred[!all.pred%in%c(pnames,"(Intercept)")]
    
     y <- as.matrix(data[yvrs])
-    clus <- data[,clus]
+    clus <- data[,clname]
     pred <- as.matrix(mm)
     xcol <- which(colnames(mm)%in%pvrs)
     zcol <- which(colnames(mm)%in%qvrs)
 
   }
-
 
   # *** prepare input (type)
   if(!missing(type)){
@@ -116,7 +116,7 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10, group=
 
   }
 
-  # reorder data
+  # reorder colums
   cc <- which(colnames(data) %in% c(clname,grname,yvrs))
   data.ord <- cbind(data[c(clname,grname,yvrs)],data[-cc])
 
@@ -164,6 +164,8 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10, group=
     gy <- y[gi,]
     gpred <- pred[gi,]
     gclus <- clus[gi]
+    # sort 1, ..., k
+    gclus <- match(gclus, unique(gclus)) 
 
     cur <- pan::pan(gy, subj=gclus, gpred, xcol, zcol, prior, seed=rns[1,gg], iter=n.burn)
     glast[[gg]] <- cur$last
@@ -188,6 +190,8 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10, group=
       gy <- y[gi,]
       gpred <- pred[gi,]
       gclus <- clus[gi]
+      # sort 1, ..., k
+      gclus <- match(gclus, unique(gclus)) 
   
       cur <- pan::pan(gy, subj=gclus, gpred, xcol, zcol, prior, seed=rns[ii+1,gg], iter=n.iter, 
         start=glast[[gg]])

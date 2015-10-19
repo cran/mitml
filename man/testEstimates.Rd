@@ -7,12 +7,13 @@ Computes final parameter estimates and inferences from multiply imputed data set
 
 \usage{
 
-testEstimates(model, var.comp=FALSE, df.com=NULL)
+testEstimates(model, qhat, uhat, var.comp=FALSE, df.com=NULL)
 
 }
 \arguments{
 
   \item{model}{A list of fitted statistical models (see examples).}
+  \item{qhat, uhat}{Two matrices or lists containing point and variances estimates, respectively, for each imputed data set (see examples).}
   \item{var.comp}{A logical flag indicating if estimates for variance components should be calculated. Default is to \code{FALSE}.}
   \item{df.com}{(optional) A numeric vector denoting the complete-data degrees of freedom for the hypothesis test.}
 
@@ -21,6 +22,7 @@ testEstimates(model, var.comp=FALSE, df.com=NULL)
 
 This function calculates final parameter estimates and inferences as suggested by Rubin (1987, "Rubin's rules") for each parameter of the fitted model.
 In other words, \code{testEstimates} aggregates estimates and standard errors across multiply imputed data sets.
+The parameters and standard errors can either be supplied as fitted statistical models (\code{model}), or as two matrices or lists (\code{qhat} and \code{uhat}, see examples).
 
 Rubin's original method assumes that the complete-data degrees of freedom are infinite, which is reasonable in larger samples.
 Alternatively, the degrees of freedom can be adjusted for smaller samples by specifying \code{df.com} (Barnard & Rubin, 1999).
@@ -33,6 +35,7 @@ Users may prefer calculating these estimates manually using \code{with.mitml.lis
 No inferences are calculated for variance components.
 
 Currently, the procedure supports statistical models that define \code{coef} and \code{vcov} methods (e.g., \code{lm}) and multilevel models estimated with \code{lme4} or \code{nlme}.
+The arguments \code{qhat} and \code{uhat} allow for quite general calculation of final estimates regardless of model class.
 Support for further models may be added in future releases.
 
 }
@@ -65,6 +68,7 @@ implist <- mitmlComplete(imp, print=1:5)
 require(lme4)
 fit.lmer <- with(implist, lmer(SES ~ (1|ID)))
 
+# * Example 1: combine estimates using model recognition
 # final estimates and inferences sperately for each parameter (Rubin's rules)
 testEstimates(fit.lmer)
 
@@ -73,4 +77,11 @@ testEstimates(fit.lmer, df.com=49)
 
 # ... with additional table for variance components and ICCs
 testEstimates(fit.lmer, var.comp=TRUE)
+
+# * Example 2: combine estimates using matrices or lists
+fit.lmer <- with(implist, lmer(SES ~ ReadAchiev + (1|ID)))
+
+qhat <- sapply(fit.lmer, fixef)
+uhat <- sapply(fit.lmer, function(x) diag(vcov(x)))
+testEstimates(qhat=qhat, uhat=uhat)
 }
