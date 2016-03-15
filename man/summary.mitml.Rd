@@ -13,7 +13,7 @@ Provides summary statistics and additional information regarding the imputation 
 
 \arguments{
 
-  \item{object}{An object of class \code{mitml} as produced by \code{panImpute}.}
+  \item{object}{An object of class \code{mitml} as produced by \code{panImpute} and \code{jomoImpute}.}
   \item{n.Rhat}{(optional) An integer denoting the number of sequences used for calculating the potential scale reduction factor. Default is to \code{3}.}
   \item{goodness.of.appr}{(optional) A logical flag indicating if the goodness of approximation should be printed. Default is to \code{FALSE} (see Note).}
   \item{\dots}{Not being used.}
@@ -52,7 +52,7 @@ Hoff, P. D. (2009). \emph{A first course in Bayesian statistical methods}. New Y
 }
 
 \author{Simon Grund}
-\seealso{\code{\link{panImpute}}}
+\seealso{\code{\link{panImpute}},\code{\link{jomoImpute}}}
 \examples{
 data(studentratings)
 

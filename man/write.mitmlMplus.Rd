@@ -13,7 +13,7 @@ write.mitmlMplus(x, filename, suffix="list", sep="\t", dec=".", na.value=-999)
 
 \arguments{
 
-  \item{x}{An object of class \code{mitml} or \code{mitml.list} (i.e., either produced by \code{panImpute} or \code{mitmlComplete}).}
+  \item{x}{An object of class \code{mitml} or \code{mitml.list} (i.e., either produced by \code{panImpute}/\code{jomoImpute} or \code{mitmlComplete}).}
   \item{filename}{Basic file name for the text files containing the imputed data sets, to be specified without file extension.}
   \item{suffix}{File name suffix for the index file.}
   \item{sep}{The field separator.}
@@ -43,7 +43,7 @@ Muthen, L. K., & Muthen, B. O. (2012). \emph{Mplus User's Guide. Seventh Edition
 }
 
 \author{Simon Grund}
-\seealso{\code{\link{panImpute}}}
+\seealso{\code{\link{panImpute}}, \code{\link{jomoImpute}}, \code{\link{mitmlComplete}}}
 \examples{
 data(studentratings)
 

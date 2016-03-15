@@ -2,7 +2,7 @@
 \alias{plot.mitml}
 \title{Print diagnostic plots}
 \description{
-Generates diagnostic plots for assessing the convergence and autocorrelation behavior of \code{pan}'s Gibbs sampler.
+Generates diagnostic plots for assessing the convergence and autocorrelation behavior of \code{pan}'s and \code{jomo}'s MCMC algorithms.
 }
 
 \usage{
@@ -15,7 +15,7 @@ Generates diagnostic plots for assessing the convergence and autocorrelation beh
 
 \arguments{
 
-  \item{x}{An object of class \code{mitml} as produced by \code{panImpute}.}
+  \item{x}{An object of class \code{mitml} as produced by \code{panImpute} and \code{jomoImpute}.}
   \item{print}{A character vector containing one or several of \code{"beta"}, \code{"psi"} or \code{"sigma"} denoting which parameters should be plotted. Default is to plot all parameters.}
   \item{group}{Either \code{"all"} or an integer denoting for which group plots should be generated. Used only when \code{group} has been specified in \code{panImpute} for group-wise imputation.}
   \item{trace}{One of \code{"imputation"}, \code{"burnin"} or \code{"all"} denoting which part of the parameter chain should be used for the trace plot. Default plots only the iterations after burn-in.}
@@ -28,7 +28,7 @@ Generates diagnostic plots for assessing the convergence and autocorrelation beh
 
 \details{
 
-The \code{plot} method generates a series of plots for the parameters of the \code{pan} model that can be used for diagnostic purposes.
+The \code{plot} method generates a series of plots for the parameters of the imputation model which can be used for diagnostic purposes.
 
 Setting \code{print} to \code{"beta"}, \code{"psi"} and \code{"sigma"} will plot the fixed effects, the variances and covariances of random effects, and the variances and covariances of residuals, respectively.
 Each plotting window contains a trace plot (upper left), an autocorrelation plot (lower left), a kernel density approximation of the posterior distribution (upper right), and a posterior summary (lower right).
@@ -47,7 +47,7 @@ None (invisible \code{NULL}).
 }
 
 \author{Simon Grund}
-\seealso{\code{\link{panImpute}}}
+\seealso{\code{\link{panImpute}}, \code{\link{jomoImpute}}}
 \examples{
 \dontrun{
 data(studentratings)

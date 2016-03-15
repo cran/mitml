@@ -1,6 +1,24 @@
 # * RELEASE HISTORY OF THE 'mitml' PACKAGE:
 --
 
+# Version 0.3-0 (2016-03-15)
+--
+
+* jomoImpute:      new function, providing an interface to the jomo package for
+                   imputation of missing values at level 1
+                   
+                   - includes adjustments in mitml.complete as well as the
+                     summary, print, and plot methods)
+                   - includes minor changes in the interpretation of the formula
+                     and type arguments
+                   - adds a few slots to the 'mitml' object class
+
+* summary:         bugfix (fixes behavior when applied to fixed parameters
+                   with zero variance)
+
+* as.mitml.list:   bugfix (fixes order of class attributes)
+
+
 # Version 0.2-4 (2015-10-19)
 --
 

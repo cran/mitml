@@ -14,7 +14,7 @@ write.mitmlSPSS(x, filename, sep="\t", dec=".", na.value=-999, syntax=TRUE,
 
 \arguments{
 
-  \item{x}{An object of class \code{mitml} or \code{mitml.list} (i.e., either produced by \code{panImpute} or \code{mitmlComplete}).}
+  \item{x}{An object of class \code{mitml} or \code{mitml.list} (i.e., either produced by \code{panImpute}/\code{jomoImpute} or \code{mitmlComplete}).}
   \item{filename}{Basic file name of the data and syntax files, to be specified without file extension.}
   \item{sep}{The field separator.}
   \item{dec}{The decimal separator.}
@@ -50,7 +50,7 @@ IBM Corp. (2013). \emph{IBM SPSS Statistics for Windows, Version 22.0}. Armonk, 
 }
 
 \author{Simon Grund}
-\seealso{\code{\link{panImpute}}, \code{\link{write.mitmlSAV}}}
+\seealso{\code{\link{panImpute}}, \code{\link{jomoImpute}}, \code{\link{mitmlComplete}}, \code{\link{write.mitmlSAV}}}
 \examples{
 data(studentratings)
 

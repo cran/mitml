@@ -1,7 +1,7 @@
 \name{mitmlComplete}
 \alias{mitmlComplete}
-\title{Extract imputed data sets produced by \code{panImpute}}
-\description{This function extracts imputed data sets from \code{mitml} class objects as produced by \code{panImpute}.}
+\title{Extract imputed data sets}
+\description{This function extracts imputed data sets from \code{mitml} class objects as produced by \code{panImpute} and \code{jomoImpute}.}
 \usage{
 
 mitmlComplete(x, print=0, force.list=FALSE)
@@ -9,7 +9,7 @@ mitmlComplete(x, print=0, force.list=FALSE)
 }
 \arguments{
 
-  \item{x}{An object of class \code{mitml} as produced by \code{panImpute}.}
+  \item{x}{An object of class \code{mitml} as produced by \code{panImpute} and \code{jomoImpute}.}
   \item{print}{Either an integer vector, \code{"list"}, or \code{"all"} denoting which data sets to extract. If set to \code{"all"} or \code{"list"}, then all imputed data sets will be returned as a list. Negative values and zero will return the original (incomplete) data set. Default is to zero.}
   \item{force.list}{(optional) Logical flag indicating if single data sets should be enclosed in a list. Default is to \code{FALSE}.}
 
@@ -22,7 +22,7 @@ If several data sets are extracted, the result is always a list of data sets wit
 }
 \author{Simon Grund}
 
-\seealso{\code{\link{panImpute}}}
+\seealso{\code{\link{panImpute}},\code{\link{jomoImpute}}}
 \examples{
 data(studentratings)
 

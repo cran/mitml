@@ -24,7 +24,7 @@ Returns the saved \code{mitml} class object.
 }
 
 \author{Simon Grund}
-\seealso{\code{\link{panImpute}}, \code{\link{write.mitml}}}
+\seealso{\code{\link{panImpute}}, \code{\link{jomoImpute}}, \code{\link{write.mitml}}}
 \examples{
 data(studentratings)
 

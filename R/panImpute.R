@@ -1,8 +1,22 @@
-panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10, group=NULL, prior=NULL, seed=NULL, save.pred=FALSE, silent=FALSE){
+panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10,
+                      group=NULL, prior=NULL, seed=NULL, save.pred=FALSE,
+                      silent=FALSE){
+
 # wrapper function for the Gibbs sampler in the pan package
+
+  # .model.byFormula <- mitml:::.model.byFormula
+  # .model.byType <- mitml:::.model.byType
+
+  # empty objects to assign to
+  clname <- yvrs <- y <- ycat <- zcol <- xcol <- pred <- clus <- psave <- 
+    pvrs <- qvrs <- pnames <- qnames <- NULL
 
   # *** checks
   if(!missing(type) & !missing(formula)) stop("Only one of 'type' or 'formula' may be specified.")
+  if(save.pred & !missing(type)){
+    warning("Option 'save.pred' is ignored if 'type' is specified")
+    save.pred=FALSE 
+  }
 
   # preserve original order
   if(!is.data.frame(data)) as.data.frame(data)
@@ -31,90 +45,11 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10, group=
   group.original <- group
   group <- as.numeric(factor(group,levels=unique(group)))
 
-
-  # *** prepare input (formula)
-  if(!missing(formula)){
-
-    ft <- terms(formula)
-    tl <- attr(ft,"term.labels")
-    vrs <- attr(ft,"variables")[-1]
-  
-    # responses
-    yvrs <- as.character(vrs)[attr(ft,"response")]
-    yvrs <- gsub("[\r\n]","",yvrs)
-    yvrs <- strsplit(yvrs, split="[[:blank:]]*[[:punct:]][[:blank:]]*")[[1]]
-    # order of formula terms in data: needed for indicator matrix
-    # yord <- sapply(yvrs, function(x) which(colnames(data)==x))
-  
-    # cluster id
-    clt <- tl[grep("\\|",tl)]
-    if(length(clt)==0) stop("Cluster indicator not found in formula\n\n",formula,"\n\nPlease specify the cluster indicator and at least one random term using the '|' operator.")
-    clt <- strsplit( clt, split="[[:blank:]]*\\|[[:blank:]]*" )[[1]]
-    clname <- clt[2]
-
-    # order data
-    data <- data[ order(group,data[,clname]), ]
-    group.original <- group.original[ order(group) ]
-    group <- group[ order(group) ]
-
-    # predictors: fixed
-    pvrs <- c(if(attr(ft,"intercept")){"(Intercept)"}, tl[-grep("\\|",tl)])
-    # random
-    cl.fml <- as.formula(paste("~",clt[1])) 
-    cl.ft <- terms(cl.fml)
-    qvrs <- c(if(attr(cl.ft,"intercept")){"(Intercept)"}, attr(cl.ft,"term.labels"))
-
-    # model matrix
-    attr(data,"na.action") <- identity
-    mm <- model.matrix(formula, data=data)
-    mm <- mm[,-grep("\\|",colnames(mm)),drop=FALSE]
-    mm <- cbind(mm, data[qvrs[!qvrs%in%c(pvrs,"(Intercept)")]])
-    # add random-only intercept
-    if("(Intercept)"%in%qvrs & !"(Intercept)"%in%pvrs){
-      add.int <- matrix(1,nrow(data),1)
-      colnames(add.int) <- "(Intercept)"
-      mm <- cbind(add.int,mm)
-    }
-    all.pred <- colnames(mm)
-    pnames <- colnames(data)[colnames(data)%in%all.pred]
-    psave <- all.pred[!all.pred%in%c(pnames,"(Intercept)")]
-   
-    y <- as.matrix(data[yvrs])
-    clus <- data[,clname]
-    pred <- as.matrix(mm)
-    xcol <- which(colnames(mm)%in%pvrs)
-    zcol <- which(colnames(mm)%in%qvrs)
-
-  }
-
-  # *** prepare input (type)
-  if(!missing(type)){
-  
-    if(ncol(data)!=length(type)) stop("Length of 'type' must be equal to the number of colums in 'data'.")
-    if(sum(type==-2)<1) stop("Cluster indicator not found.")
-    if(sum(type==-2)>1) stop("Only one cluster indicator may be specified.")
-    if(save.pred) warning("Option 'save.pred' is ignored if 'type' is specified")
-    save.pred=FALSE 
- 
-    data <- data[ order(group,data[,type==-2]), ]
-    group.original <- group.original[ order(group) ]
-    group <- group[ order(group) ]
-
-    clname <- colnames(data)[type==-2]
-    clus <- data[,clname]
-    yvrs <- colnames(data)[type==1]
-    y <- as.matrix(data[yvrs])
-  
-    pred <- cbind(1,as.matrix(data[type%in%c(2,3)]))
-    pnames <- colnames(data)[type%in%c(2,3)]
-    pvrs <- c("(Intercept)",pnames)
-    qvrs <- c("(Intercept)",colnames(data)[type==3])
-    colnames(pred) <- pvrs
-    
-    xcol <- 1:length(pvrs)
-    zcol <- xcol[pvrs%in%qvrs]
-
-  }
+  # *** model input
+  if(!missing(formula)) .model.byFormula(data, formula, group, group.original,
+                                         method="pan")
+  if(!missing(type)) .model.byType(data, type, group, group.original,
+                                   method="pan")
 
   # reorder colums
   cc <- which(colnames(data) %in% c(clname,grname,yvrs))
@@ -138,7 +73,7 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10, group=
 
   # prepare output
   ind <- which(is.na(data.ord), arr.ind=TRUE, useNames=FALSE)
-  ind <- ind[ ind[,2] %in% which(colnames(data.ord)%in%colnames(y)), ]
+  ind <- ind[ ind[,2] %in% which(colnames(data.ord)%in%colnames(y)),,drop=FALSE ]
   rpm <- matrix(NA, nrow(ind), m)
 
   ng <- length(unique(group))
@@ -218,22 +153,25 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10, group=
   data.ord <- data.ord[,-ncol(data.ord)]
 
   # prepare output data
-  if(save.pred) data.ord <- cbind(data.ord,mm[psave])
+  if( save.pred & !missing(formula) ) data.ord <- cbind(data.ord,pred[,psave,drop=F])
   attr(data.ord,"sort") <- srt
   attr(data.ord,"group") <- group.original
+  model <- list(clus=clname, yvrs=yvrs, pvrs=pvrs, qvrs=qvrs)
+  attr(model,"full.names") <- list(pvrs=pnames, qvrs=qnames)
 
   out <- list(
     data=data.ord,
     replacement.mat=rpm,
     index.mat=ind,
     call=match.call(),
-    model=list(clus=clname, yvrs=yvrs, pvrs=pvrs, qvrs=qvrs),
+    model=model,
+    random.L1="none",
     prior=prior,
     iter=list(burn=n.burn, iter=n.iter, m=m),
     par.burnin=bpar,
     par.imputation=ipar
   )
-  class(out) <- "mitml"
+  class(out) <- c("mitml","pan")
   out
   
 }

@@ -3,9 +3,10 @@
 \docType{package}
 \title{mitml: Tools for multiple imputation in multilevel modeling}
 \description{Provides tools for multiple imputation of missing data in multilevel modeling.
-This package includes a user-friendly interface to the \code{pan} algorithm, and several functions for visualizing, managing and the analyzing multiply imputed data sets.
+This package includes a user-friendly interface to the algorithms implemented in the \code{pan} and the \code{jomo} package, as well as several functions for visualizing, managing and the analyzing multiply imputed data sets.
 
 The main interface to \code{pan} is the function \code{\link{panImpute}}, which allows specification of a wide array of imputation models.
+In addition, the function \code{\link{jomoImpute}} provides an interface to \code{jomo}, further extending the functionality of \code{pan}.
 Imputations are efficiently stored in objects of class \code{mitml}.
 In order to obtain the completed (i.e., imputed) data sets from those objects, \code{\link{mitmlComplete}} is used, which produces a list of imputed data sets (class \code{mitml.list}) that can be used in further analyses.
 

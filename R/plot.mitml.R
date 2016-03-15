@@ -1,11 +1,20 @@
 plot.mitml <- function(x, print=c("beta","psi","sigma"), group="all", trace=c("imputation","burnin","all"), smooth=3, export=c("none","png","pdf"), dev.args=list(), ...){
 # plot method for objects of class "mitml"
 
+  # .movingAverage <- mitml:::.movingAverage
+
   # retrieve data
   vrs <- x$model
-  yvrs <- 1:length(vrs$yvrs); names(yvrs) <- vrs$yvrs
-  pvrs <- 1:length(vrs$pvrs); names(pvrs) <- vrs$pvrs
-  qvrs <- 1:length(vrs$qvrs); names(qvrs) <- vrs$qvrs
+  clus <- x$model$clus
+  yvrs <- seq_along(vrs$yvrs)
+  pvrs <- seq_along(attr(vrs,"full.names")$pvrs)
+  qvrs <- seq_along(attr(vrs,"full.names")$qvrs)
+  names(yvrs) <- vrs$yvrs
+  names(pvrs) <- attr(vrs,"full.names")$pvrs
+  names(qvrs) <- attr(vrs,"full.names")$qvrs
+
+  # check for random L1
+  rl1 <- x$random.L1=="full"
 
   prt <- match.arg(print,several.ok=TRUE)
   shw <- match.arg(trace)
@@ -165,7 +174,7 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), group="all", trace=c("i
 
       # autocorrelation plot
       par(mar=c(3,3,1,0)+0.5)
-      drw <- x$par.imputation[["psi"]][ii,jj,,gg]
+      drw <- x$par.imputation[["psi"]][jj,ii,,gg]
       acf(drw, lag.max=x$iter[["iter"]], ylim=c(-.1,1), yaxt="n", main=NULL, ylab="ACF", ci=0, ...)
       axis(side=2, at=c(0,.5,1))
       abline(h=c(-.1,.1), col="blue")
@@ -195,11 +204,17 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), group="all", trace=c("i
 
   # plots for residuals
   if("sigma" %in% prt){
+
+  clus2 <- unique(x$data[,clus])
+  clus3 <- if(rl1) seq_along(clus2) else 1
+  for(icl in clus3){
+
   for(ii in 1:length(yvrs)){
     for(jj in ii:length(yvrs)){
 
       if(export!="none"){
-        filename <- paste("SIGMA_",gfile,names(yvrs[ii]),"_WITH_",names(yvrs[jj]),".",export,sep="")
+        filename <- paste0("SIGMA_",gfile,names(yvrs[ii]),"_WITH_",names(yvrs[jj]), 
+                           if(rl1) paste0(clus,clus2[icl]),".",export)
         filename <- gsub("[(),]","",filename)
         filename <- gsub("[[:space:]]","-",filename)
         out.args <- c(list(file=file.path(out,filename)),dev.args)
@@ -208,10 +223,17 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), group="all", trace=c("i
 
       layout(matrix(c(1,2,3,4),2,2), c(5,1), c(1.13,1))
 
+      jj2 <- jj+(icl-1)*length(yvrs)
       switch(shw,
-        imputation={trc <- x$par.imputation[["sigma"]][jj,ii,,gg]},
-        burnin={trc <- x$par.burnin[["sigma"]][jj,ii,,gg]},
-        all={trc <- c(x$par.burnin[["sigma"]][jj,ii,,gg], x$par.imputation[["sigma"]][jj,ii,,gg])}
+        imputation={
+          trc <- x$par.imputation[["sigma"]][jj2,ii,,gg]
+        },
+        burnin={
+          trc <- x$par.burnin[["sigma"]][jj2,ii,,gg]
+        },
+        all={
+          trc <- c(x$par.burnin[["sigma"]][jj2,ii,,gg], x$par.imputation[["sigma"]][jj2,ii,,gg])
+        }
       )
 
       # trace plots
@@ -221,8 +243,8 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), group="all", trace=c("i
       yr <- ymax-ymin
       plot(trc, type="l", ylab="Trace", xlab="Iteration", xaxt="n", ylim=c(ymin-yr*.03, ymax+yr*.03), 
            ...)
-      title(main=paste("Sigma [",ii,",",jj,glab,"]: ",names(yvrs[ii])," WITH ",names(yvrs[jj]),sep=""),
-            cex.main=1)
+      title(main=paste0("Sigma [",ii,",",jj,glab,"]: ",names(yvrs[ii])," WITH ",names(yvrs[jj]),
+                        if(rl1) paste0(" [",clus,":",clus2[icl],"]")), cex.main=1)
       axt <- axTicks(1)
       if(shw=="imputation"){
         axl <- sprintf("%d", axt + dim(x$par.burnin[["sigma"]])[3])
@@ -241,7 +263,7 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), group="all", trace=c("i
 
       # autocorrelation plot
       par(mar=c(3,3,1,0)+0.5)
-      drw <- x$par.imputation[["sigma"]][ii,jj,,gg]
+      drw <- x$par.imputation[["sigma"]][jj2,ii,,gg]
       acf(drw, lag.max=x$iter[["iter"]], ylim=c(-.1,1), yaxt="n", main=NULL, ylab="ACF", ci=0, ...)
       axis(side=2, at=c(0,.5,1))
       abline(h=c(-.1,.1), col="blue")
@@ -267,7 +289,7 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), group="all", trace=c("i
     }else{
       devAskNewPage(ask=TRUE)
     }
-  }}}
+  }}}}
 
   }
 
@@ -276,5 +298,29 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), group="all", trace=c("i
   if(export=="none") devAskNewPage(ask=FALSE)
   dev.off()
   invisible()
+}
+
+# moving window average for time series
+.movingAverage <- function(x, B, fill=TRUE){
+
+    x1 <- cumsum(x)
+    N <- length(x)
+    y <- rep(NA,N)
+    i <- seq(B+1 , N-B)
+    xdiff <- x1[ -seq(1,B) ] - x1[ -seq(N-B+1,N) ] 
+    xdiff <- xdiff[ - seq(1,B) ] 
+
+    y[i]  <- ( x1[i] + xdiff - c(0,x1[ -seq(N-2*B,N) ]) ) / (2*B+1)
+
+  # fill NAs at beginning and end of time series
+  if(fill){
+    j <- seq(0,B-1)
+    ybeg <- sapply(j, function(z) sum( x[ seq(1,(2*z+1)) ]) / (2*z+1) )
+    yend <- sapply(rev(j), function(z) sum( x[ seq(N-2*z,N) ] ) / (2*z+1) )
+    y[j+1] <- ybeg
+    y[rev(N-j)] <- yend
+  }
+
+  y
 }
 

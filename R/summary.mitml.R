@@ -1,6 +1,9 @@
 summary.mitml <- function(object, n.Rhat=3, goodness.of.appr=FALSE,...){
 # summary method for objects of class "mitml"
 
+  # .SDprop <- mitml:::.SDprop
+  # .GelmanRubin <- mitml:::.GelmanRubin
+
   inc <- object$data
   ngr <- length(unique(attr(object$data,"group")))
   prm <- object$par.imputation
@@ -10,7 +13,7 @@ summary.mitml <- function(object, n.Rhat=3, goodness.of.appr=FALSE,...){
   mdr[] <- sprintf(mdr*100,fmt="%.1f")
   mdr <- gsub("^0.0$","0",mdr)
 
-  # convergence
+  # convergence for imputation phase
   conv <- NULL
   iter <- dim(prm[[1]])[3]
   Rhat <- ifelse(is.null(n.Rhat), FALSE, n.Rhat >= 2)
@@ -30,7 +33,7 @@ summary.mitml <- function(object, n.Rhat=3, goodness.of.appr=FALSE,...){
       cmat[,3] <- rep(1:nl,each=ni*nj)
       colnames(cmat) <- c("i1","i2","grp",if(Rhat) "Rhat",if(SDprop) "SDprop")
 
-      for(ll in 1:nl){
+      for(ll in 1:nl){ # by group
 
         lind <- cmat[,3]==ll
         chains <- matrix(prm[[pp]][,,,ll], ni*nj, iter)

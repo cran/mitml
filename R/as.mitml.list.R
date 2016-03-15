@@ -7,7 +7,7 @@ as.mitml.list <- function(x){
     x <- lapply(x,as.data.frame)
     cat("Note: List entries were converted to class 'data.frame'.\n")
   }
-  class(x) <- c(class(x),"mitml.list")
+  class(x) <- c("mitml.list",class(x))
   x
     
 }
