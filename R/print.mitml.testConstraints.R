@@ -9,6 +9,7 @@ print.mitml.testConstraints <- function(x,...){
   adj <- x$adj.df
   dfc <- x$df.com
 
+  # header
   cat("\nCall:\n", paste(deparse(cl)), sep="\n")
 
   cat("\nHypothesis test calculated from",m,"imputed data sets. The following\nconstraints were specified:\n")
@@ -16,8 +17,13 @@ print.mitml.testConstraints <- function(x,...){
 
   cat("\n\nCombination method:",mth,"\n")
 
+  # check for large values
+  fmt <- c("%.3f","%.0f","%.3f","%.3f","%.3f")
+  fmt[test>=10^5] <- "%.3e"
+  out <- sprintf(fmt,test)
+
+  # print table
   cat("\n")
-  out <- sprintf(c("%.3f","%.0f","%.3f","%.3f","%.3f"),test)
   w <- max(sapply(c(out,colnames(test)),nchar))
   cat("  ",format(colnames(test),justify="right",width=w),"\n")
   cat("  ",format(out,justify="right",width=w),"\n")
@@ -33,3 +39,9 @@ print.mitml.testConstraints <- function(x,...){
   invisible()
 }
 
+summary.mitml.testConstraints <- function(object,...){
+# summary method for objects of class mitml.testConstraints
+  
+  print.mitml.testConstraints(object,...)
+
+}

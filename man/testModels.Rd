@@ -59,8 +59,8 @@ A \code{print} method is used for better readable console output.
 
 \note{
 
-The \eqn{D_3} method and the likelihood-based \eqn{D_2} are currently only supported for maximum likelihood (ML) fitted models.
-Support for REML fitted models may be added in future releases.
+The \eqn{D_3} method and the likelihood-based \eqn{D_2} assume that models were fit using maximum likelihood (ML).
+Models fit using REML are automatically refit using ML.
 
 }
 

@@ -56,7 +56,8 @@ jomoImpute <- function(data, type, formula, random.L1=c("none","mean","full"),
 
   # more checks
   if(any(is.na(pred))) stop("Predictor variables must not contain missing data.")
-  if(any(!sapply(data[yvrs], function(a) is.factor(a) || is.numeric(a)))) stop("Target variables must either be numeric of factors.")
+  if(any(is.na(group))) stop("Grouping variable must not contain missing data.")
+  if(any(!sapply(data[yvrs], function(a) is.factor(a) || is.numeric(a)))) stop("Target variables must either be numeric or factors.")
   if(sum(is.na(y))==0 & sum(is.na(ycat))==0) stop("Target variables do not contain any missing data.")
 
   # reorder colums
@@ -268,6 +269,7 @@ jomoImpute <- function(data, type, formula, random.L1=c("none","mean","full"),
   attr(data.ord,"sort") <- srt
   attr(data.ord,"group") <- group.original
   if(ncat>0){
+    attr(data.ord,"cvrs") <- names(ycat.labels)
     attr(data.ord,"levels") <- y.numcat
     attr(data.ord,"labels") <- ycat.labels
   }

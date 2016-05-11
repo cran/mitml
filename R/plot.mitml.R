@@ -3,13 +3,11 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), group="all", trace=c("i
 
   # .movingAverage <- mitml:::.movingAverage
 
-  # retrieve data
+  # retrieve data and variable names
   vrs <- x$model
   clus <- x$model$clus
-  yvrs <- seq_along(vrs$yvrs)
   pvrs <- seq_along(attr(vrs,"full.names")$pvrs)
   qvrs <- seq_along(attr(vrs,"full.names")$qvrs)
-  names(yvrs) <- vrs$yvrs
   names(pvrs) <- attr(vrs,"full.names")$pvrs
   names(qvrs) <- attr(vrs,"full.names")$qvrs
 
@@ -29,7 +27,7 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), group="all", trace=c("i
   # export, graphical parameters
   if(export!="none"){
     wd <- getwd()
-    out <- file.path(wd,"panPlots")
+    out <- file.path(wd,"mitmlPlots")
     if(!file.exists(out)) dir.create(out)
   }else{
     do.call(dev.new,dev.args)
@@ -42,12 +40,39 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), group="all", trace=c("i
   #
 
   for(gg in 1:grp){
+
+  # grouping
   if(grp.imp>1){
     glab <- paste(",Group:",grp.labels[gg],sep="")
     gfile <- paste("Group-",grp.labels[gg],"_",sep="")
   }else{
     glab <- gfile <- ""
   }
+
+  # expand yvrs for multiple categories
+  yvrs <- vrs$yvrs
+  cvrs <- attr(x$data,"cvrs")
+  # expand categorical target variables
+  if(!is.null(cvrs)){
+    yvrs <- c(yvrs[!yvrs%in%cvrs], cvrs)
+    for(cc in 1:length(cvrs)){
+      cv <- cvrs[cc]
+      ci <- which(yvrs==cv)
+      yi <- 1:length(yvrs)
+      nlev <- attr(x$data,"levels")[gg,cc]
+      if(nlev>2){
+        newy <- paste0(cv, 1:(nlev-1))
+      }else{
+        newy <- cv
+      }
+      sel0 <- yi[yi<ci]
+      sel1 <- yi[yi>ci]
+      yvrs <- c(yvrs[sel0],newy,yvrs[sel1])
+    }
+  }
+  ynam <- yvrs
+  yvrs <- seq_along(yvrs)
+  names(yvrs) <- ynam
 
   # plots for fixed regression coefficients
   if("beta" %in% prt){

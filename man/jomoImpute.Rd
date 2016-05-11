@@ -33,6 +33,8 @@ jomoImpute(data, type, formula, random.L1=c("none","mean","full"), n.burn=5000,
 \details{
 
 This function serves as an interface to the \code{jomo} package.
+The function supports imputation of multilevel continuous and categorical data.
+In order for categorical variables to be detected correctly, these must be formatted as a \code{factor} variables (see examples).
 The imputation model can be specified using either the \code{type} or the \code{formula} argument.
 
 The \code{type} interface is designed to provide quick-and-easy imputations using \code{jomo}. The \code{type} argument must be an integer vector denoting the role of each variable in the imputation model:

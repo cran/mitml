@@ -14,6 +14,7 @@ Several functions have been added to allow for convenient analysis of multiply i
 The functions \code{\link[=with.mitml.list]{with}} and \code{\link[=with.mitml.list]{within}} may be used for manipulating the data sets and for fitting statistical models.
 Parameter estimates can be extracted using \code{\link{testEstimates}}.
 Single- and multi-parameter hypotheses tests can be performed using \code{\link{testConstraints}} and \code{\link{testModels}}.
+In addition, the \code{\link{anova}} method provides a simple interface to model comparisons.
 
 Data sets can be imported and exported from or to different statistical software packages. Currently, \code{\link{write.mitmlMplus}}, \code{\link{write.mitmlSAV}} and \code{\link{write.mitmlSPSS}} export data sets to M\emph{plus} and SPSS, while other functions import previously imputed data from within R.
 

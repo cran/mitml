@@ -20,7 +20,7 @@ Generates diagnostic plots for assessing the convergence and autocorrelation beh
   \item{group}{Either \code{"all"} or an integer denoting for which group plots should be generated. Used only when \code{group} has been specified in \code{panImpute} for group-wise imputation.}
   \item{trace}{One of \code{"imputation"}, \code{"burnin"} or \code{"all"} denoting which part of the parameter chain should be used for the trace plot. Default plots only the iterations after burn-in.}
   \item{smooth}{A numeric value denoting the smoothing factor for the trend line in trace plots. Higher values correspond to less smoothing. Default is \code{3}. If set to \code{0} or \code{NULL}, the trend line is suppressed.}
-  \item{export}{(optional) A character string specifying if plots should be exported to file. If \code{"png"} or \code{"pdf"}, then plots are printed into a folder named "panPlots" in the current directory using either the \code{png} or \code{pdf} device. Default is to \code{"none"}, which does not export files.}
+  \item{export}{(optional) A character string specifying if plots should be exported to file. If \code{"png"} or \code{"pdf"}, then plots are printed into a folder named "mitmlPlots" in the current directory using either the \code{png} or \code{pdf} device. Default is to \code{"none"}, which does not export files.}
   \item{dev.args}{(optional) A named list containing additional arguments that are passed to the graphics device.}
   \item{\dots}{Parameters passed to the plotting functions.}
 

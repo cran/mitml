@@ -4,6 +4,8 @@ with.mitml.list <- function(data, expr, ...){
   expr <- substitute(expr)
   parent <- parent.frame()
 
-  lapply(data, function(x) eval(expr, x, parent))
+  out <- lapply(data, function(x) eval(expr, x, parent))
+  class(out) <- c("mitml.result","list")
+  out
 
 }

@@ -21,16 +21,16 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
 
   # default method (lm)
   coef.method <- vc.method <- lr.method <- "default"
-  if(cls=="lm") vc.method <- lr.method <- "lm"
+  if(cls[1]=="lm") vc.method <- lr.method <- "lm"
 
   # merMod (lme4)
-  if(length(grep("merMod",cls)) > 0 & coef.method=="default"){
+  if(any(grepl("merMod",cls)) & coef.method=="default"){
     if(!requireNamespace("lme4", quietly=TRUE)) stop("The 'lme4' package must be installed to handle 'merMod' class objects.")
     coef.method <- vc.method <- lr.method <- "lmer"
   }
   
   # lme (nlme)
-  if(length(grep("lme",cls)) > 0 & coef.method=="default"){
+  if(any(grepl("^.?lme$",cls)) & coef.method=="default"){
     if(!requireNamespace("nlme", quietly=TRUE)) stop("The 'nlme' package must be installed to handle 'lme' class objects.")
     coef.method <- vc.method <- lr.method <- "nlme"
   }
@@ -86,7 +86,8 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
       adj.df=!is.null(df.com),
       df.com=df.com,
       method="D1",
-      use="wald"
+      use="wald",
+      reml=FALSE
     )
   }
 
@@ -95,6 +96,8 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
   if(method=="D2"){
 
     if(use=="wald"){
+
+      reml=FALSE
 
       fe <- switch(coef.method,
         lmer=.getCOEF.lmer(model,null.model),
@@ -114,6 +117,15 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
 
     # TODO: likelihood test for (single) model fit (with null.model=NULL)
     if(use=="likelihood"){
+
+      # check for REML and refit
+      reml1 <- sapply(model, .is.REML, lr.method=lr.method)
+      reml0 <- sapply(null.model, .is.REML, lr.method=lr.method)
+      reml <- ( any(reml0) | any(reml1) )
+      if(reml){
+        model[reml1] <- lapply(model[reml1], .update.ML, lr.method=lr.method)
+        null.model[reml0] <- lapply(null.model[reml0], .update.ML, lr.method=lr.method)
+      }
 
       dW <- switch(coef.method,
         lmer=.getLR.lmer(model,null.model),
@@ -146,7 +158,8 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
       adj.df=FALSE,
       df.com=NULL,
       method="D2",
-      use=use
+      use=use,
+      reml=reml
     )
   }
 
@@ -156,19 +169,30 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
 
     # error checking
     if(!lr.method%in%c("lm","lmer","nlme")) stop("The 'D3' method is currently not supported for models of class '",cls,"'.")
+    if(!grepl("^lme$",cls[1]) & lr.method=="nlme") stop("The 'D3' method is currently only supported for linear mixed-effects models.")
+    if(!grepl("^l?merMod$",cls[1]) & lr.method=="lmer") stop("The 'D3' method is currently only supported for linear mixed-effects models.")
+
+    # check for REML and refit
+    reml1 <- sapply(model, .is.REML, lr.method=lr.method)
+    reml0 <- sapply(null.model, .is.REML, lr.method=lr.method)
+    reml <- ( any(reml0) | any(reml1) )
+    if(reml){
+      model[reml1] <- lapply(model[reml1], .update.ML, lr.method=lr.method)
+      null.model[reml0] <- lapply(null.model[reml0], .update.ML, lr.method=lr.method)
+    }
 
     # LR at fit-specific estimates
     dL <- switch( lr.method, lmer=.getLR.lmer(model,null.model), nlme=.getLR.nlme(model,null.model),
-                    lm=.getLR.default(model,null.model))
+                  lm=.getLR.default(model,null.model))
 
     fe0 <- switch( coef.method, lmer=.getCOEF.lmer(null.model), nlme=.getCOEF.nlme(null.model),
-                  default=.getCOEF.default(null.model) )
+                   default=.getCOEF.default(null.model) )
     vc0 <- switch( vc.method, lmer=.getVC.lmer(null.model), nlme=.getVC.nlme(null.model),
-                  lm=.getVC.lm(null.model) )
+                   lm=.getVC.lm(null.model,ML=TRUE) )
     fe1 <- switch( coef.method, lmer=.getCOEF.lmer(model), nlme=.getCOEF.nlme(model),
                   default=.getCOEF.default(model) )
     vc1 <- switch( vc.method, lmer=.getVC.lmer(model), nlme=.getVC.nlme(model),
-                  lm=.getVC.lm(model) )
+                   lm=.getVC.lm(model,ML=TRUE) )
 
     dLbar <- mean(dL)
     m <- length(model)
@@ -180,7 +204,6 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
       lmer={
 
         if(length(vc0$vlist)>2) stop("The 'D3' method is only supported for models of class 'merMod' with a single cluster variable.")
-        if(attr(dL,"REML")) stop("The 'D3' method is currently not supported for REML fits. Please refit using ML.")
 
         Q0 <- fe0$Qhat
         Q1 <- fe1$Qhat
@@ -197,7 +220,6 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
       nlme={
 
         if(length(vc0$vlist)>2) stop("The 'D3' method is only supported for models of class 'lme' with a single cluster variable.")
-        if(attr(dL,"REML")) stop("The 'D3' method is currently not supported for REML fits. Please refit using ML.")
 
         Q0 <- fe0$Qhat
         Q1 <- fe1$Qhat
@@ -251,7 +273,8 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
       adj.df=FALSE,
       df.com=NULL,
       method="D3",
-      use="likelihood"
+      use="likelihood",
+      reml=reml
     )
   }
 
@@ -259,3 +282,19 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
   out
 }
 
+.is.REML <- function(x, lr.method){
+
+  reml <- FALSE
+  if(lr.method=="lmer") reml <- lme4::isREML(x)
+  if(lr.method=="nlmer") reml <- x$method=="REML"
+  reml
+
+}
+
+.update.ML <- function(x, lr.method){
+
+  if(lr.method=="lmer") x <- update(x, REML=FALSE)
+  if(lr.method=="nlme") x <- update(x, data=x$data, method="ML")
+  x
+
+}

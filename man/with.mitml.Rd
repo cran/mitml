@@ -31,14 +31,14 @@ However, the two functions return different values (see below).
 \value{
 
 \itemize{
-  \item{\code{with}}{: Returns the evaluated expression from each data set as a list. This is particularly useful for fitting statistical models to multiply imputed data. The list of fitted models can be analyzed using \code{testEstimates}, \code{testModels}, and \code{testConstraints}.}
-  \item{\code{within}}{: Evaluates the R expression for each data set and returns the altered data sets as a list. This is useful for manipulating the data prior to data analysis (e.g., centering, calculating cluster means, etc.).}
+  \item{\code{with}}{: Returns the evaluated expression from each data set as a list (class \code{mitml.result}. This is useful for fitting statistical models to multiply imputed data. The list of fitted models can be analyzed using \code{testEstimates}, \code{testModels}, \code{testConstraints}, or \code{anova}.}
+  \item{\code{within}}{: Evaluates the R expression for each data set and returns the altered data sets as a list \code{mitml.list}. This is useful for manipulating the data prior to data analysis (e.g., centering, calculating cluster means, etc.).}
 }
 
 }
 
 \author{Simon Grund}
-\seealso{\code{\link{mitmlComplete}}, \code{\link{clusterMeans}}}
+\seealso{\code{\link{mitmlComplete}}, \code{\link{anova.mitml.result}}, \code{\link{testEstimates}}, \code{\link{testModels}}, \code{\link{testConstraints}}}
 \examples{
 data(studentratings)
 

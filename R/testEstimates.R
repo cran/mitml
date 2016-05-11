@@ -66,12 +66,12 @@ testEstimates <- function(model, qhat, uhat, var.comp=FALSE, df.com=NULL){
     cls <- class(model[[1]])
     coef.method <- vc.method <- "default"
 
-    if(cls=="lm") vc.method <- "lm"
-    if(length(grep("merMod",cls)) > 0 & coef.method=="default"){
+    if(cls[1]=="lm") vc.method <- "lm"
+    if(any(grepl("merMod",cls)) & coef.method=="default"){
       if(!requireNamespace("lme4", quietly=TRUE)) stop("The 'lme4' package must be installed in order to handle 'merMod' class objects.")
       coef.method <- vc.method <- "lmer"
     }
-    if(length(grep("lme",cls)) > 0 & coef.method=="default"){
+    if(any(grepl("^.?lme$",cls)) & coef.method=="default"){
       if(!requireNamespace("nlme", quietly=TRUE)) stop("The 'nlme' package must be installed in order to handle 'lme' class objects.")
       coef.method <- vc.method <- "nlme"
     }
@@ -123,8 +123,9 @@ testEstimates <- function(model, qhat, uhat, var.comp=FALSE, df.com=NULL){
         lmer=.getVC.lmer(model),
         nlme=.getVC.nlme(model),
         lm=.getVC.lm(model),
-        default=warning("Computation of variance components not supported for objects of class '",cls,"' (see ?with.mitml.list for examples to calculate these manually).")
+        default=list(vlist=NULL,addp=NULL)
       )
+      if(vc.method=="default") warning("Computation of variance components not supported for objects of class '", cls[1], "' (see ?with.mitml.list for manual calculation).")
    
       vlist <- vc$vlist
       addp <- vc$addp
@@ -146,12 +147,14 @@ testEstimates <- function(model, qhat, uhat, var.comp=FALSE, df.com=NULL){
           }}
         }
       }
-      vout <- matrix(vout,ncol=1)
-      colnames(vout) <- "Estimate"
-      rownames(vout) <- nms
-      if(!is.null(addp)) vout <- rbind(vout, as.matrix(addp))
-  
+      if(!is.null(vout)){
+        vout <- matrix(vout,ncol=1)
+        colnames(vout) <- "Estimate"
+        rownames(vout) <- nms
+        if(!is.null(addp)) vout <- rbind(vout, as.matrix(addp))
+      }
     }
+
   }
   
   out <- list(

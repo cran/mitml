@@ -55,14 +55,14 @@ testConstraints <- function(model, qhat, uhat, constraints, method=c("D1","D2"),
     coef.method <- "default"
 
     # merMod (lme4)
-    if(length(grep("merMod",cls)) > 0 & coef.method=="default"){
+    if(any(grepl("merMod",cls)) & coef.method=="default"){
       if(!requireNamespace("lme4", quietly=TRUE)) stop("The 'lme4' package must be installed to handle 'merMod' class objects.")
       coef.method <- "lmer"
     }
   
     # lme (nlme)
-    if(length(grep("lme",cls)) > 0 & coef.method=="default"){
-      if(!requireNamespace("nlme", quietly=TRUE)) stop("The 'nlme' package must be installed to handle 'lme' class objects.")
+    if(any(grepl("^.?lme$",cls)) & coef.method=="default"){
+      if(!requireNamespace("nlme", quietly=TRUE)) stop("The 'nlme' package must be installed to handle '(n)lme' class objects.")
       coef.method <- "nlme"
     }
 

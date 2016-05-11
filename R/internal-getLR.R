@@ -74,20 +74,17 @@
 # *** default method
 .getLR.default <- function(model,null.model=NULL, psi=NULL, null.psi=NULL){
 
-  k <- NULL
 
   if(is.null(null.model)){
   # TODO: global model fit (experimental, D2)
 
-    if(is.null(k)) k <- try( df.residual(model[[1]]) )
-    if(is.null(k)) k <- try( tail(anova(model[[1]]),1) )
+    k <- .tryResidualDf(model[[1]])
     logL1 <- sapply(model,logLik)
     dW <- -2*logL1
 
   }else{
 
-    if(is.null(k)) k <- try( df.residual(null.model[[1]]) - df.residual(model[[1]]) )
-    if(is.null(k)) k <- try( tail(anova(null.model[[1]])$Df,1) - tail(anova(model[[1]]),1) )
+    k <- .tryResidualDf(null.model[[1]]) - .tryResidualDf(model[[1]])
     if(is.null(psi) & is.null(null.psi)){
       logL0 <- sapply(null.model,logLik)
       logL1 <- sapply(model,logLik)
@@ -163,6 +160,9 @@
     sig2 <- psi$sigma2
   }
 
+  # error check
+  if(is.null(nlme::getData(object))) stop("No data sets found in 'lme' fit. See '?testModels' for an example.")
+
   cls <- nlme::getGroups(object)
   p <- length(beta)
   q <- dim(D)[1]
@@ -171,7 +171,6 @@
   X <- split(model.matrix(fe,nlme::getData(object)),cls)
   re <- attr(object$modelStruct$reStruct[[1]],"formula")
   Z <- split(model.matrix(re,nlme::getData(object)),cls)
-  if(is.null(X)) stop("No data sets found in 'lme' fit. See '?testModels' for an example.")
 
   L <- numeric(nlevels(cls))
   for(i in levels(cls)){
@@ -197,7 +196,9 @@
 
   if(is.null(psi)){
     beta <- coef(object)
-    sig2 <- sum(object$residuals^2)/object$df.residual
+    # sig2 <- sum(resid(object)^2)/df.residual(object)
+    r <- resid(object)                # SiG 19-04-2016
+    sig2 <- sum(r^2)/length(r)
   }else{
     beta <- psi$beta
     sig2 <- psi$sigma2
@@ -213,3 +214,11 @@
   
 }
 
+.tryResidualDf <- function(object){
+
+    k <- NULL
+    if(is.null(k)) k <- tryCatch( df.residual(object), error=function(f) NULL )
+    if(is.null(k)) k <- tryCatch( tail(anova(object),1), error=function(f) NULL )
+    k
+
+}

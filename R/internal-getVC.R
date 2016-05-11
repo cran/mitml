@@ -36,8 +36,7 @@
     }
   }
 
-  out <- list(vlist=vlist,addp=addp)
-  out
+  list(vlist=vlist,addp=addp)
 }
 
 # *** nlme method
@@ -70,22 +69,24 @@
     names(addp) <- paste("ICC|",clus,sep="")
   }
 
-  out <- list(vlist=vlist,addp=addp)
-  out
+  list(vlist=vlist,addp=addp)
 }
 
 # *** lm method
-.getVC.lm <- function(model){
+.getVC.lm <- function(model,ML=FALSE){
 
   m <- length(model)
   vlist <- addp <- NULL
 
-  rv <- sapply(model, function(z) summary(z)$sigma^2 )
+  if(ML){  # SiG 16-04-2016
+    rv <- sapply(model, function(z) sum(resid(z)^2)/length(resid(z)) )
+  }else{
+    rv <- sapply(model, function(z) sum(resid(z)^2)/df.residual(z) )
+  }
   dim(rv) <- c(1,1,m)
   dimnames(rv) <- list("Residual","Residual",NULL)
   vlist <- c(vlist, list(rv))
 
-  out <- list(vlist=vlist,addp=addp)
-  out
+  list(vlist=vlist,addp=addp)
 }
 

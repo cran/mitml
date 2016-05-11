@@ -8,6 +8,7 @@ print.mitml.testEstimates <- function(x,...){
   adj <- x$adj.df
   dfc <- x$df.com
 
+  # header
   cat("\nCall:\n", paste(deparse(cl)), sep="\n")
 
   cat("\nFinal parameter estimates and inferences obtained from",m,"imputed data sets.\n")
@@ -48,3 +49,9 @@ print.mitml.testEstimates <- function(x,...){
   invisible()
 }
 
+summary.mitml.testEstimates <- function(object,...){
+# summary method for objects of class mitml.testEstimates
+
+  print.mitml.testEstimates(object,...)
+
+}

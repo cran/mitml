@@ -58,7 +58,7 @@ mitmlComplete <- function(x, print=0, force.list=FALSE){
 
     fac <- which(colnames(x) %in% names(attr(x,"labels")))
     nofac <- !(ind[,2] %in% fac)
-    x[ ind[nofac,] ] <- rpm[nofac,i]
+    if(any(nofac)) x[ ind[nofac,] ] <- rpm[nofac,i]
 
     for(ff in fac){
       fi <- ind[,2]==ff
