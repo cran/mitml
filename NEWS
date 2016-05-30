@@ -1,6 +1,19 @@
 # * RELEASE HISTORY OF THE 'mitml' PACKAGE:
 --
 
+# Version 0.3-2 (2016-05-10)
+--
+
+* plot:            added features (requesting single parameters, thinning of 
+                   the chain prior to plotting)
+
+* summary:         added features (summary of autocorrelation)
+
+* plot:            revised appearance and behavior (burn-in printed in grey,
+                   included Rhat and autocorrelation at lag-k in the posterior
+                   summary; for trace="burnin", the summary is now calculated
+                   for the burn-in phase, not the imputation phase)
+
 # Version 0.3-1 (2016-05-10)
 --
 

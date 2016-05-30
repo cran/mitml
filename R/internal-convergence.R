@@ -1,6 +1,9 @@
 # Gelman-Rubin (1992) criterion for convergence (Rhat)
 .GelmanRubin <- function(x,m){
 
+  # convert vector
+  if(is.vector(x)) x <- matrix(x,1,length(x))
+
   iter <- ncol(x)
   mod <- iter %% m
   n <- rep( (iter-mod)/m , m )
@@ -38,17 +41,24 @@
 # criterion for goodness of approximation (Hoff, 2009)
 .SDprop <- function(x){
 
+  # convert vector
+  if(is.vector(x)) x <- matrix(x,1,length(x))
+
   np <- nrow(x)
   v <- apply(x, 1, var)   # variance of chain
   v0 <- v==0
-  sdp <- sp0 <- numeric(np)
+  sdp <- sp0 <- neff <- numeric(np)
   for(i in 1:np){
     arp <- try( ar(x[i,], aic=TRUE), silent=T )
     if(!v0[i]) sp0[i] <- arp$var.pred/(1 - sum(arp$ar))^2   # spectral density at frequency 0
   }
-  mcmc.v <- sp0/ncol(x)   # mcmc-variance (correcting for autocorrelation)
+  n <- ncol(x)
+  mcmc.v <- sp0/n                # true variance of the mean (correcting for autocorrelation)
+  neff[!v0] <- (v/mcmc.v)[!v0]   # effective sample size
+  neff[v0] <- n
   # proportion of variance due to sampling inefficiency
-  sdp[!v0] <- sqrt(mcmc.v / v)[!v0] # for zero variance defined as 0
+  sdp[!v0] <- sqrt(mcmc.v / v)[!v0]
+  attr(sdp,"n.eff") <- neff
   sdp
 
 }

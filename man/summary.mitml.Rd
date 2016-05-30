@@ -7,7 +7,7 @@ Provides summary statistics and additional information regarding the imputation 
 
 \usage{
 
-\method{summary}{mitml}(object, n.Rhat=3, goodness.of.appr=FALSE, ...)
+\method{summary}{mitml}(object, n.Rhat=3, goodness.of.appr=FALSE, autocorrelation=FALSE, ...)
 
 }
 
@@ -15,7 +15,8 @@ Provides summary statistics and additional information regarding the imputation 
 
   \item{object}{An object of class \code{mitml} as produced by \code{panImpute} and \code{jomoImpute}.}
   \item{n.Rhat}{(optional) An integer denoting the number of sequences used for calculating the potential scale reduction factor. Default is to \code{3}.}
-  \item{goodness.of.appr}{(optional) A logical flag indicating if the goodness of approximation should be printed. Default is to \code{FALSE} (see Note).}
+  \item{goodness.of.appr}{(optional) A logical flag indicating if the goodness of approximation should be printed. Default is to \code{FALSE} (see details).}
+  \item{autocorrelation}{(optional) A logical flag indicating if the autocorrelation should be printed. Default is to \code{FALSE} (see details).}
   \item{\dots}{Not being used.}
 
 }
@@ -27,21 +28,20 @@ The \code{summary} method calculates summary statistics for objects of class \co
 The output includes the potential scale reduction factor (PSRF, or \eqn{\hat{R}}), which is calculated for each parameter of the imputation model as a measure of convergence (Gelman and Rubin, 1992).
 Calculation of the PSRFs can be suppressed by setting \code{n.Rhat=NULL}.
 
+The PSRFs are not computed from different chains, but by dividing each chain from the imputation phase into a number of sequences as denoted by \code{n.Rhat}.
+This is slightly different from the original method proposed by Gelman and Rubin.
+
+The goodness of approximation indicates what proportion of the posterior standard deviation is due to simulation error.
+For multiple imputation, the goodness of approximation is not essential; it should be considered only if posterior summaries, such as the EAP, are of interest.
+
+The summary of the autocorrelation includes estimates of the autocorrelation in the parameter chains at lag 1 (i.e., for consecutive draws) and for lags \eqn{k} and \eqn{2k}, where \eqn{k} is the number of iterations between imputations.
+For lag \eqn{k} and \eqn{2k}, the autocorrelation is slightly smoothed to reduce random noise (see \code{plot.mitml}).
+
 }
 
 \value{
 
 Returns an object of class \code{summary.mitml}. A print method is used for better readable console output.
-
-}
-
-\note{
-
-The PSRFs are not computed from different chains, but by dividing each chain from the imputation phase into a number of sequences as denoted by \code{n.Rhat}.
-This is slightly different from the original method proposed by Gelman and Rubin.
-
-The goodness of approximation indicates what proportion of the posterior standard deviation is due to simulation error.
-For multiple imputation, goodness of approximation is not essential; it should be considered only if posterior summaries, such as the EAP, are of interest.
 
 }
 

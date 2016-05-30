@@ -26,28 +26,63 @@ print.mitml.summary <- function(x,...){
 
     for(cc in attr(conv,"stats")){
 
-      cout <- matrix(c( sapply(conv, function(z) min(z[,cc])),
-                sapply(conv, function(z) quantile(z[,cc],.25)),
-                sapply(conv, function(z) mean(z[,cc])),
-                sapply(conv, function(z) median(z[,cc])),
-                sapply(conv, function(z) quantile(z[,cc],.75)),
-                sapply(conv, function(z) max(z[,cc])) ), ncol=6 )
-      rownames(cout) <- c("Beta:","Psi:","Sigma:")
-      colnames(cout) <- c("Min","25%","Mean","Median","75%","Max")
-      clab <- switch(cc, Rhat="\nPotential scale reduction (Rhat, imputation phase):\n",
-                         SDprop="\nGoodness of approximation (imputation phase):\n")
-      cat(clab,"\n")
-      print.table(round(cout,3))
+      # summary for Rhat and SDprop
+      if(cc=="Rhat"|cc=="SDprop"){
 
-      clab <- switch(cc, Rhat="\nLargest potential scale reduction:\n",
-                         SDprop="\nPoorest approximation:\n")
-      cat(clab)
-      maxb <- conv$beta[which.max(conv$beta[,cc]),]
-      maxp <- conv$psi[which.max(conv$psi[,cc]),]
-      maxs <- conv$sigma[which.max(conv$sigma[,cc]),]
-      cat("Beta: [", paste(maxb[1:2],collapse=",") ,"], ",
-          "Psi: [", paste(maxp[1:2],collapse=",") ,"], ",
-          "Sigma: [", paste(maxs[1:2],collapse=",") ,"]\n", sep="")
+        cout <- matrix(c( sapply(conv, function(z) min(z[,cc])),
+                  sapply(conv, function(z) quantile(z[,cc],.25)),
+                  sapply(conv, function(z) mean(z[,cc])),
+                  sapply(conv, function(z) median(z[,cc])),
+                  sapply(conv, function(z) quantile(z[,cc],.75)),
+                  sapply(conv, function(z) max(z[,cc])) ), ncol=6 )
+        rownames(cout) <- c("Beta:","Psi:","Sigma:")
+        colnames(cout) <- c("Min","25%","Mean","Median","75%","Max")
+        clab <- switch(cc, Rhat="\nPotential scale reduction (Rhat, imputation phase):\n",
+                           SDprop="\nGoodness of approximation (imputation phase):\n")
+        cat(clab,"\n")
+        print.table(round(cout,3))
+  
+        clab <- switch(cc, Rhat="\nLargest potential scale reduction:\n",
+                           SDprop="\nPoorest approximation:\n")
+        cat(clab)
+        maxb <- conv$beta[which.max(conv$beta[,cc]),]
+        maxp <- conv$psi[which.max(conv$psi[,cc]),]
+        maxs <- conv$sigma[which.max(conv$sigma[,cc]),]
+        cat("Beta: [", paste(maxb[1:2],collapse=",") ,"], ",
+            "Psi: [", paste(maxp[1:2],collapse=",") ,"], ",
+            "Sigma: [", paste(maxs[1:2],collapse=",") ,"]\n", sep="")
+  
+      }
+
+      # summary for ACF
+      if(cc=="ACF"){
+
+        cout <- c( sapply(conv, function(z) mean(z[,"lag-1"])),
+                   sapply(conv, function(z) mean(z[,"lag-k"])),
+                   sapply(conv, function(z) mean(z[,"lag-2k"])),
+                   sapply(conv, function(z) max(z[,"lag-1"])),
+                   sapply(conv, function(z) max(z[,"lag-k"])),
+                   sapply(conv, function(z) max(z[,"lag-2k"])) )
+        neg <- cout<0
+        cout <- sprintf(cout,fmt="%.3f")
+        cout[neg] <- gsub("^-0","-",cout[neg])
+        cout[!neg] <- gsub("^0"," ",cout[!neg])
+        cout <- matrix(cout, 3, 6)
+        cout <- rbind(c(" Lag1"," Lagk","Lag2k"," Lag1"," Lagk","Lag2k"), cout)
+        rownames(cout) <- c("","Beta:","Psi:","Sigma:")
+        colnames(cout) <- c(" Mean","",""," Max","","")
+        cat("\nAutocorrelation (ACF, imputation phase):\n\n")
+        print.table(cout)
+  
+        cat("\nLargest autocorrelation at lag k:\n")
+        maxb <- conv$beta[which.max(abs(conv$beta[,"lag-k"])),]
+        maxp <- conv$psi[which.max(abs(conv$psi[,"lag-k"])),]
+        maxs <- conv$sigma[which.max(abs(conv$sigma[,"lag-k"])),]
+        cat("Beta: [", paste(maxb[1:2],collapse=",") ,"], ",
+            "Psi: [", paste(maxp[1:2],collapse=",") ,"], ",
+            "Sigma: [", paste(maxs[1:2],collapse=",") ,"]\n", sep="")
+  
+      }
     }
   }
 
