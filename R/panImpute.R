@@ -51,13 +51,24 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10,
   if(!missing(type)) .model.byType(data, type, group, group.original,
                                    method="pan")
 
+  # check model input
+  if(any(is.na(group)))
+    stop("Grouping variable must not contain missing data.")
+  if(any(is.na(pred)))
+    stop("Predictor variables must not contain missing data.")
+  if(sum(is.na(y))==0)
+    stop("Target variables do not contain any missing data.")
+  if(any(!sapply(y,is.numeric)))
+    stop("Target variables must be numeric. You may either convert them or use jomoImpute() instead.")
+  if(any(duplicated(yvrs)))
+    stop("Found duplicate target variables.")
+
   # reorder colums
   cc <- which(colnames(data) %in% c(clname,grname,yvrs))
   data.ord <- cbind(data[c(clname,grname,yvrs)],data[-cc])
 
-  # * * * * * * * * * * * * * * * * * * * *
-
-  if(sum(is.na(y))==0) stop("Target variables do not contain any missing data.")
+  # ***
+  # pan setup
 
   if(is.null(prior)){
     prior <- list( a=ncol(y), Binv=diag(1,ncol(y)),
@@ -157,6 +168,7 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10,
   attr(data.ord,"sort") <- srt
   attr(data.ord,"group") <- group.original
   model <- list(clus=clname, yvrs=yvrs, pvrs=pvrs, qvrs=qvrs)
+  attr(model,"is.L2") <- FALSE
   attr(model,"full.names") <- list(pvrs=pnames, qvrs=qnames)
 
   out <- list(

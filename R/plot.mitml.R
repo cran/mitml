@@ -1,4 +1,4 @@
-plot.mitml <- function(x, print=c("beta","psi","sigma"), pos=NULL, group="all",
+plot.mitml <- function(x, print=c("beta","beta2","psi","sigma"), pos=NULL, group="all",
                        trace=c("imputation","burnin","all"), thin=1, smooth=3,
                        n.Rhat=3, export=c("none","png","pdf"), dev.args=list(),
                        ...){
@@ -7,21 +7,28 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), pos=NULL, group="all",
 
   # .movingAverage <- mitml:::.movingAverage
   # .smoothedACF <- mitml:::.smoothedACF
+  # .GelmanRubin <- mitml:::.GelmanRubin
 
-  # retrieve data and variable names
+  # retrieve data and variable names (predictors)
   vrs <- x$model
   clus <- x$model$clus
   pvrs <- seq_along(attr(vrs,"full.names")$pvrs)
   qvrs <- seq_along(attr(vrs,"full.names")$qvrs)
   names(pvrs) <- attr(vrs,"full.names")$pvrs
   names(qvrs) <- attr(vrs,"full.names")$qvrs
+  isL2 <- attr(x$model,"is.L2")
+  if(isL2){
+    pvrs.L2 <- seq_along(attr(vrs,"full.names")$pvrs.L2)
+    names(pvrs.L2) <- attr(vrs,"full.names")$pvrs.L2
+  }
 
-  # check for random L1
-  rl1 <- x$random.L1=="full"
-
+  # match arguments
   print <- match.arg(print,several.ok=TRUE)
   trace <- match.arg(trace)
   export <- match.arg(export)
+
+  # check for random L1
+  rl1 <- x$random.L1=="full"
 
   # check print and position for selected parameters
   if(!is.null(pos) & length(print)>1){
@@ -31,7 +38,6 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), pos=NULL, group="all",
 
   # grouping
   grp.labels <- unique(attr(x$data,"group"))
-  grp.imp <- length(grp.labels)
   if(class(group)=="numeric") grp.labels <- grp.labels[group]
   grp <- length(grp.labels)
 
@@ -53,20 +59,23 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), pos=NULL, group="all",
   for(gg in 1:grp){
 
   # grouping
-  if(grp.imp>1){
+  if(grp>1){
     glab <- paste(",Group:",grp.labels[gg],sep="")
     gfile <- paste("Group-",grp.labels[gg],"_",sep="")
   }else{
     glab <- gfile <- ""
   }
 
-  # expand yvrs for multiple categories
+  # expand targets for multiple categories
   yvrs <- vrs$yvrs
-  cvrs <- attr(x$data,"cvrs")
-  # expand categorical target variables
-  if(!is.null(cvrs)){
+  yvrs.L2 <- vrs$yvrs.L2
+
+  # ... level 1
+  cvrs <- intersect(yvrs,attr(x$data,"cvrs"))
+  nc <- length(cvrs)
+  if(length(cvrs)>=1){
     yvrs <- c(yvrs[!yvrs%in%cvrs], cvrs)
-    for(cc in 1:length(cvrs)){
+    for(cc in 1:nc){
       cv <- cvrs[cc]
       ci <- which(yvrs==cv)
       yi <- 1:length(yvrs)
@@ -85,6 +94,32 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), pos=NULL, group="all",
   yvrs <- seq_along(yvrs)
   names(yvrs) <- ynam
 
+  # ... level 2
+  if(isL2){
+    cvrs.L2 <- intersect(yvrs.L2,attr(x$data,"cvrs"))
+    nc.L2 <- length(cvrs.L2)
+    if(length(cvrs.L2)>=1){
+      yvrs.L2 <- c(yvrs.L2[!yvrs.L2%in%cvrs.L2], cvrs.L2)
+      for(cc in 1:nc.L2){
+        cv <- cvrs.L2[cc]
+        ci <- which(yvrs.L2==cv)
+        yi <- 1:length(yvrs.L2)
+        nlev <- attr(x$data,"levels")[gg,nc+cc]
+        if(nlev>2){
+          newy <- paste0(cv, 1:(nlev-1))
+        }else{
+          newy <- cv
+        }
+        sel0 <- yi[yi<ci]
+        sel1 <- yi[yi>ci]
+        yvrs.L2 <- c(yvrs.L2[sel0],newy,yvrs.L2[sel1])
+      }
+    }
+    ynam <- yvrs.L2
+    yvrs.L2 <- seq_along(yvrs.L2)
+    names(yvrs.L2) <- ynam
+  }
+
   # number of iterations
   n <- dim(x$par.burnin[["beta"]])[3]+dim(x$par.imputation[["beta"]])[3]
   nb <- dim(x$par.burnin[["beta"]])[3]
@@ -96,7 +131,9 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), pos=NULL, group="all",
   si <- seq.int(thin,ni,by=thin)
   lag <- ceiling(niter/thin)
 
-  # *** plots for fixed regression coefficients
+  # *** plots for fixed regression coefficients at level 1
+  #
+
   if("beta" %in% print){
 
   # check if pos is badly defined
@@ -107,16 +144,16 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), pos=NULL, group="all",
     }
   }
 
-  for(ii in yvrs){
-    for(jj in pvrs){
+  for(ic in yvrs){
+    for(ir in pvrs){
 
       # skip if individual parameters requested
       if(!is.null(pos)){
-        if(!(pos[1]==jj & pos[2]==ii)) next
+        if(!(pos[1]==ir & pos[2]==ic)) next
       }
     
       if(export!="none"){
-        filename <- paste("BETA_",gfile,names(yvrs[ii]),"_ON_",names(pvrs[jj]),".",export,sep="")
+        filename <- paste("BETA_",gfile,names(yvrs[ic]),"_ON_",names(pvrs[ir]),".",export,sep="")
         filename <- gsub("[(),]","",filename)
         filename <- gsub("[[:space:]]","-",filename)
         out.args <- c(list(file=file.path(out,filename)),dev.args)
@@ -128,14 +165,14 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), pos=NULL, group="all",
       # choose section of trace
       switch(trace,
         imputation={
-          trc <- x$par.imputation[["beta"]][jj,ii,,gg][si]
+          trc <- x$par.imputation[["beta"]][ir,ic,,gg][si]
         },
         burnin={
-          trc <- x$par.burnin[["beta"]][jj,ii,,gg][sb]
+          trc <- x$par.burnin[["beta"]][ir,ic,,gg][sb]
         },
         all={
-          trc <- c(x$par.burnin[["beta"]][jj,ii,,gg],
-                   x$par.imputation[["beta"]][jj,ii,,gg])[s]
+          trc <- c(x$par.burnin[["beta"]][ir,ic,,gg],
+                   x$par.imputation[["beta"]][ir,ic,,gg])[s]
         }
       )
 
@@ -152,7 +189,7 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), pos=NULL, group="all",
         lines(which(s>=nb), trc[s>=nb], col="black")
       }
       axt <- axTicks(1)
-      title(main=paste("Beta [",jj,",",ii,glab,"]: ",names(yvrs[ii])," ON ",names(pvrs[jj]),sep=""), cex.main=1)
+      title(main=paste("Beta [",ir,",",ic,glab,"]: ",names(yvrs[ic])," ON ",names(pvrs[ir]),sep=""), cex.main=1)
       if(trace=="imputation"){
         axl <- sprintf("%d", thin*(axt+nb))
       }else{
@@ -172,9 +209,126 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), pos=NULL, group="all",
 
       # further plots
       if(trace=="burnin"){
-        drw <- x$par.burnin[["beta"]][jj,ii,sb,gg]
+        drw <- x$par.burnin[["beta"]][ir,ic,sb,gg]
       }else{
-        drw <- x$par.imputation[["beta"]][jj,ii,si,gg]
+        drw <- x$par.imputation[["beta"]][ir,ic,si,gg]
+      }
+
+      # autocorrelation plot
+      par(mar=c(3,3,1,0)+0.5)
+      ac <- acf(drw, lag.max=lag+2, plot=F)
+      plot(ac[1:lag], ylim=c(-.1,1), yaxt="n", main=NULL, ylab="ACF", ci=0,
+           ...)
+      axis(side=2, at=c(0,.5,1))
+      abline(h=c(-.1,.1), col="blue")
+
+      # kernel density plot
+      par(mar=c(3,0,2,0)+0.5, mgp=c(2,0,0))
+      ddrw <- density(drw)
+      plot(x=ddrw$y, y=ddrw$x, type="l", xaxt="n", yaxt="n", xlab="", ylab="",
+           ylim=c(ymin-yr*.03, ymax+yr*.03),
+           ...)
+
+      # posterior summary
+      par(mar=c(1,-0.5,0,-0.5)+0.5)
+      plot.new()
+      text(0,0.5,paste("EAP:   ", sprintf(fmt="%.3f", mean(drw)), "\n",
+                       "MAP:   ", sprintf(fmt="%.3f", ddrw$x[which.max(ddrw$y)]), "\n",
+                       "SD:    ", sprintf(fmt="%.3f", sd(drw)), "\n",
+                       "2.5%:  ", sprintf(fmt="%.3f", quantile(drw,.025)), "\n",
+                       "97.5%: ", sprintf(fmt="%.3f", quantile(drw,.975)), "\n",
+                       "Rhat:  ", sprintf(fmt="%.3f", .GelmanRubin(t(drw),n.Rhat)), "\n",
+                       "ACF-k: ", sprintf(fmt="%.3f", .smoothedACF(ac,k=lag,sd=.5)), "\n",
+                       sep=""), adj=c(0,.5), cex=.8, family="mono", font=2, ...)
+    
+      if(export!="none"){
+        dev.off()
+      }else{
+        devAskNewPage(ask=TRUE)
+      }
+  }}}
+  
+  # *** plots for fixed regression coefficients at level 2
+  #
+
+  if(isL2 & "beta2" %in% print){
+
+  # check if pos is badly defined
+  if(!is.null(pos)){
+    if(pos[1] > max(pvrs.L2) | pos[1] < min(pvrs.L2) | pos[2] > max(yvrs.L2) | pos[2] < min(yvrs.L2)){
+      .restoreDevice(oldpar,export,close=TRUE)
+      stop("There is no entry [",pos[1],",",pos[2],"] in 'beta2'.")
+    }
+  }
+
+  for(ic in yvrs.L2){
+    for(ir in pvrs.L2){
+
+      # skip if individual parameters requested
+      if(!is.null(pos)){
+        if(!(pos[1]==ir & pos[2]==ic)) next
+      }
+    
+      if(export!="none"){
+        filename <- paste("BETA2_",gfile,names(yvrs.L2[ic]),"_ON_",names(pvrs.L2[ir]),".",export,sep="")
+        filename <- gsub("[(),]","",filename)
+        filename <- gsub("[[:space:]]","-",filename)
+        out.args <- c(list(file=file.path(out,filename)),dev.args)
+        do.call(export, out.args)
+      }
+      
+      layout(matrix(c(1,2,3,4),2,2), c(5,1), c(1.13,1))
+
+      # choose section of trace
+      switch(trace,
+        imputation={
+          trc <- x$par.imputation[["beta2"]][ir,ic,,gg][si]
+        },
+        burnin={
+          trc <- x$par.burnin[["beta2"]][ir,ic,,gg][sb]
+        },
+        all={
+          trc <- c(x$par.burnin[["beta2"]][ir,ic,,gg],
+                   x$par.imputation[["beta2"]][ir,ic,,gg])[s]
+        }
+      )
+
+      # trace plot
+      par(mar=c(3,3,2,0)+0.5, mgp=c(2,1,0), font.lab=2)
+      ymin <- min(trc)
+      ymax <- max(trc)
+      yr <- ymax-ymin
+      plot(trc, type=ifelse(trace=="all","n","l"), ylab="Trace", xlab="Iteration",
+           xaxt="n", ylim=c(ymin-yr*.03, ymax+yr*.03),
+           ...)
+      if(trace=="all"){
+        lines(which(s<=nb), trc[s<=nb], col="grey75")
+        lines(which(s>=nb), trc[s>=nb], col="black")
+      }
+      axt <- axTicks(1)
+      title(main=paste("Beta2 [",ir,",",ic,glab,"]: ",names(yvrs.L2[ic])," ON ",names(pvrs.L2[ir]),sep=""), cex.main=1)
+      if(trace=="imputation"){
+        axl <- sprintf("%d", thin*(axt+nb))
+      }else{
+        axl <- sprintf("%d", thin*axt)
+      }
+      axis(side=1, at=axt, labels=axl)
+
+      # trend line for trace (moving window average)
+      if(all(is.numeric(smooth),smooth>0)){
+        B <- floor(niter/(smooth*thin))
+        mwa <- .movingAverage(trc,B,fill=TRUE)
+        lines(mwa, col="grey60")
+      }
+
+      # blue line
+      if(trace=="all") abline(v=ceiling(nb/thin), col="blue")
+
+      # further plots
+      if(trace=="burnin"){
+        drw <- x$par.burnin[["beta2"]][ir,ic,sb,gg]
+      }else{
+        drw <- x$par.imputation[["beta2"]][ir,ic,si,gg]
       }
 
       # autocorrelation plot
@@ -212,10 +366,16 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), pos=NULL, group="all",
   }}}
 
   # *** plots for random effects' variance components
+  #
+
   if("psi" %in% print){
 
-  # inde matrix
+  # joint set of variables at level 1 and 2
+  yvrs.comb <- c(yvrs, if(isL2) yvrs.L2+length(yvrs))
+
+  # index matrix
   bvec <- t(expand.grid(qvrs, yvrs))
+  if(isL2) bvec <- cbind(bvec, t(expand.grid(1,yvrs.L2+length(yvrs))))
 
   # attempt to fix pos if badly defined
   if(!is.null(pos)){
@@ -224,7 +384,7 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), pos=NULL, group="all",
       pos[1] <- pos0[2]
       pos[2] <- pos0[1]
     }
-    if(any(pos0 > max(yvrs)) | any(pos0 < min(yvrs))){
+    if(any(pos0 > max(yvrs.comb)) | any(pos0 < min(yvrs.comb))){
       .restoreDevice(oldpar,export,close=TRUE)
       stop("There is no entry [",pos0[1],",",pos0[2],"] in 'psi'.")
     }
@@ -232,35 +392,47 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), pos=NULL, group="all",
       warning("Could not use entry [",pos0[1],",",pos0[2],"] in 'psi'. Used [",pos[1],",",pos[2],"] instead.")
   }
 
-  for(ii in 1:(length(yvrs)*length(qvrs))){
-    for(jj in ii:(length(yvrs)*length(qvrs))){
+  dpsi <- length(yvrs)*length(qvrs)
+  if(isL2) dpsi <- dpsi+length(yvrs.L2)
 
-      # skip if individual parameters requested
+  for(ic in 1:dpsi){
+    for(ir in ic:dpsi){
+
+      # check for residual at L2
+      icL2 <- ic > (length(yvrs)*length(qvrs))
+      irL2 <- ir > (length(yvrs)*length(qvrs))
+
+      # skip if different individual parameters requested
       if(!is.null(pos)){
-        if(!(pos[1]==jj & pos[2]==ii)) next
+        if(!(pos[1]==ir & pos[2]==ic)) next
       }
     
       if(export!="none"){
-        filename <- paste("PSI_",gfile,names(yvrs[bvec[2,ii]]),"_ON_",names(qvrs[bvec[1,ii]]),
-          "_WITH_",names(yvrs[bvec[2,jj]]),"_ON_",names(qvrs[bvec[1,jj]]),".",export,sep="")
+        filename <- paste0("PSI_", gfile,
+                           names(yvrs.comb[bvec[2,ir]]),
+                           if(!irL2) paste0("_ON_", names(qvrs[bvec[1,ir]])),
+                           "_WITH_",
+                           names(yvrs.comb[bvec[2,ic]]),
+                           if(!icL2) paste0("_ON_", names(qvrs[bvec[1,ic]])),
+                           ".", export)
         filename <- gsub("[(),]","",filename)
         filename <- gsub("[[:space:]]","-",filename)
         out.args <- c(list(file=file.path(out,filename)),dev.args)
         do.call(export, out.args)
       }
-
+ 
       layout(matrix(c(1,2,3,4),2,2), c(5,1), c(1.13,1))
 
       switch(trace,
         imputation={
-          trc <- x$par.imputation[["psi"]][jj,ii,,gg][si]
+          trc <- x$par.imputation[["psi"]][ir,ic,,gg][si]
         },
         burnin={
-          trc <- x$par.burnin[["psi"]][jj,ii,,gg][sb]
+          trc <- x$par.burnin[["psi"]][ir,ic,,gg][sb]
         },
         all={
-          trc <- c(x$par.burnin[["psi"]][jj,ii,,gg],
-                   x$par.imputation[["psi"]][jj,ii,,gg])[s]
+          trc <- c(x$par.burnin[["psi"]][ir,ic,,gg],
+                   x$par.imputation[["psi"]][ir,ic,,gg])[s]
         }
       )
 
@@ -276,8 +448,16 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), pos=NULL, group="all",
         lines(which(s<=nb), trc[s<=nb], col="grey75")
         lines(which(s>=nb), trc[s>=nb], col="black")
       }
-      title(main=paste("Psi [",jj,",",ii,glab,"]: (",names(yvrs[bvec[2,ii]])," ON ",names(qvrs[bvec[1,ii]]),
-            ") WITH (",names(yvrs[bvec[2,jj]])," ON ",names(qvrs[bvec[1,jj]]),")",sep=""), cex.main=1)
+      title(main=paste0("Psi [",ir,",",ic,glab,"]: ",
+                        if(!irL2) "(",
+                        names(yvrs.comb[bvec[2,ir]]),
+                        if(!irL2) paste0(" ON ", names(qvrs[bvec[1,ir]]), ")"),
+                        " WITH ",
+                        if(!icL2) "(",
+                        names(yvrs.comb[bvec[2,ic]]),
+                        if(!icL2) paste0(" ON ", names(qvrs[bvec[1,ic]]), ")")
+                        ),
+            cex.main=1)
       axt <- axTicks(1)
       if(trace=="imputation"){
         axl <- sprintf("%d", thin*(axt+nb))
@@ -298,9 +478,9 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), pos=NULL, group="all",
 
       # further plots
       if(trace=="burnin"){
-        drw <- x$par.burnin[["psi"]][jj,ii,sb,gg]
+        drw <- x$par.burnin[["psi"]][ir,ic,sb,gg]
       }else{
-        drw <- x$par.imputation[["psi"]][jj,ii,si,gg]
+        drw <- x$par.imputation[["psi"]][ir,ic,si,gg]
       }
 
       # autocorrelation plot
@@ -336,10 +516,13 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), pos=NULL, group="all",
   }}}
 
   # *** plots for residual variance components
+  #
+
   if("sigma" %in% print){
 
   # cluster-specific covariance matrices stacked in rows
-  clus2 <- unique(x$data[,clus])
+  gind <- attr(x$data,"group")==grp.labels[gg]
+  clus2 <- unique(x$data[gind,clus])
   clus3 <- if(rl1) seq_along(clus2) else 1
 
   # attempt to fix pos if badly defined
@@ -365,20 +548,24 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), pos=NULL, group="all",
 
   for(icl in clus3){
 
-  for(ii in 1:length(yvrs)){
-    for(jj in ii:length(yvrs)){
+  for(ic in 1:length(yvrs)){
+    for(ir in ic:length(yvrs)){
 
       # adjust row index for cluster-specific covariance matrices
-      jj2 <- jj+(icl-1)*length(yvrs)
+      ir2 <- ir+(icl-1)*length(yvrs)
 
       # skip if individual parameters requested
       if(!is.null(pos)){
-        if(!(pos[1]==jj2 & pos[2]==ii)) next
+        if(!(pos[1]==ir2 & pos[2]==ic)) next
       }
     
       if(export!="none"){
-        filename <- paste0("SIGMA_",gfile,names(yvrs[ii]),"_WITH_",names(yvrs[jj]), 
-                           if(rl1) paste0(clus,clus2[icl]),".",export)
+        filename <- paste0("SIGMA_", gfile,
+                           names(yvrs[ir]),
+                           "_WITH_",
+                           names(yvrs[ic]), 
+                           if(rl1) paste0("_",clus,clus2[icl]),
+                           ".",export)
         filename <- gsub("[(),]","",filename)
         filename <- gsub("[[:space:]]","-",filename)
         out.args <- c(list(file=file.path(out,filename)),dev.args)
@@ -389,14 +576,14 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), pos=NULL, group="all",
 
       switch(trace,
         imputation={
-          trc <- x$par.imputation[["sigma"]][jj2,ii,,gg][si]
+          trc <- x$par.imputation[["sigma"]][ir2,ic,,gg][si]
         },
         burnin={
-          trc <- x$par.burnin[["sigma"]][jj2,ii,,gg][sb]
+          trc <- x$par.burnin[["sigma"]][ir2,ic,,gg][sb]
         },
         all={
-          trc <- c(x$par.burnin[["sigma"]][jj2,ii,,gg],
-                   x$par.imputation[["sigma"]][jj2,ii,,gg])[s]
+          trc <- c(x$par.burnin[["sigma"]][ir2,ic,,gg],
+                   x$par.imputation[["sigma"]][ir2,ic,,gg])[s]
         }
       )
 
@@ -412,8 +599,12 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), pos=NULL, group="all",
         lines(which(s<=nb), trc[s<=nb], col="grey75")
         lines(which(s>=nb), trc[s>=nb], col="black")
       }
-      title(main=paste0("Sigma [",jj2,",",ii,glab,"]: ",names(yvrs[ii])," WITH ",names(yvrs[jj]),
-                        if(rl1) paste0(" [",clus,":",clus2[icl],"]")), cex.main=1)
+      title(main=paste0("Sigma [",ir2,",",ic,glab,"]: ",
+                        names(yvrs[ir]),
+                        " WITH ",
+                        names(yvrs[ic]),
+                        if(rl1) paste0(" [",clus,":",clus2[icl],"]")),
+            cex.main=1)
       axt <- axTicks(1)
       if(trace=="imputation"){
         axl <- sprintf("%d", thin*(axt+nb))
@@ -434,9 +625,9 @@ plot.mitml <- function(x, print=c("beta","psi","sigma"), pos=NULL, group="all",
 
       # further plots
       if(trace=="burnin"){
-        drw <- x$par.burnin[["sigma"]][jj2,ii,sb,gg]
+        drw <- x$par.burnin[["sigma"]][ir2,ic,sb,gg]
       }else{
-        drw <- x$par.imputation[["sigma"]][jj2,ii,si,gg]
+        drw <- x$par.imputation[["sigma"]][ir2,ic,si,gg]
       }
 
       # autocorrelation plot

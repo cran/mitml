@@ -1,6 +1,9 @@
 # Gelman-Rubin (1992) criterion for convergence (Rhat)
 .GelmanRubin <- function(x,m){
 
+  # check NA
+  if(all(is.na(x))) return(NA)
+
   # convert vector
   if(is.vector(x)) x <- matrix(x,1,length(x))
 
@@ -40,6 +43,9 @@
 
 # criterion for goodness of approximation (Hoff, 2009)
 .SDprop <- function(x){
+
+  # check NA
+  if(all(is.na(x))) return(NA)
 
   # convert vector
   if(is.vector(x)) x <- matrix(x,1,length(x))

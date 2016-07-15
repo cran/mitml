@@ -7,7 +7,7 @@ Generates diagnostic plots for assessing the convergence and autocorrelation beh
 
 \usage{
 
-\method{plot}{mitml}(x, print=c("beta","psi","sigma"), pos=NULL, group="all",
+\method{plot}{mitml}(x, print=c("beta","beta2","psi","sigma"), pos=NULL, group="all",
   trace=c("imputation","burnin","all"), thin=1, smooth=3, n.Rhat=3,
   export=c("none","png","pdf"), dev.args=list(), ...)
 
@@ -16,7 +16,7 @@ Generates diagnostic plots for assessing the convergence and autocorrelation beh
 \arguments{
 
   \item{x}{An object of class \code{mitml} as produced by \code{panImpute} and \code{jomoImpute}.}
-  \item{print}{A character vector containing one or several of \code{"beta"}, \code{"psi"} or \code{"sigma"} denoting which parameters should be plotted. Default is to plot all parameters.}
+  \item{print}{A character vector containing one or several of \code{"beta"}, \code{"beta2"}, \code{"psi"} or \code{"sigma"} denoting which parameters should be plotted. Default is to plot all parameters.}
   \item{pos}{Either \code{NULL} or an integer vector denoting a specific entry in either \code{"beta"}, \code{"psi"} or \code{"sigma"}. Default is to \code{NULL} plotting all entries.}
   \item{group}{Either \code{"all"} or an integer denoting for which group plots should be generated. Used only when \code{group} has been specified in \code{panImpute} for group-wise imputation.}
   \item{trace}{One of \code{"imputation"}, \code{"burnin"} or \code{"all"} denoting which part of the parameter chain should be used for the trace plot. Default plots only the iterations after burn-in.}
@@ -34,7 +34,8 @@ Generates diagnostic plots for assessing the convergence and autocorrelation beh
 The \code{plot} method generates a series of plots for the parameters of the imputation model which can be used for diagnostic purposes.
 In addition, a short summary of the parameter chain is displayed.
 
-Setting \code{print} to \code{"beta"}, \code{"psi"} and \code{"sigma"} will plot the fixed effects, the variances and covariances of random effects, and the variances and covariances of residuals, respectively.
+Setting \code{print} to \code{"beta"}, \code{"beta2"}, \code{"psi"} and \code{"sigma"} will plot the fixed effects, the variances and covariances of random effects, and the variances and covariances of residuals, respectively.
+Here, \code{"beta2"} refers to the fixed effects for target variables at level 2 and is only used when imputations were carried out using a two-level model (\code{\link{jomoImpute}}).
 Each plotting window contains a trace plot (upper left), an autocorrelation plot (lower left), a kernel density approximation of the posterior distribution (upper right), and a posterior summary (lower right).
 The summary includes the following quantities:
 \describe{

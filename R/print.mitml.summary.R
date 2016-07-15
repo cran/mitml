@@ -7,15 +7,24 @@ print.mitml.summary <- function(x,...){
   ngr <- x$ngr
   mdr <- x$missing.rates
   conv <- x$conv
+  isL2 <- attr(x$model,"is.L2")
 
   # print general information
   cat("\nCall:\n", paste(deparse(cl)), sep="\n")
   cat("\n")
 
+  if(isL2) cat("Level 1:\n", collapse="\n")
   cat(formatC("Cluster variable:",width=-25), vrs$clus, sep=" ", collapse="\n")
   cat(formatC("Target variables:",width=-25), vrs$yvrs, collapse="\n")
   cat(formatC("Fixed effect predictors:",width=-25), vrs$pvrs, collapse="\n")
   cat(formatC("Random effect predictors:",width=-25), vrs$qvrs, collapse="\n")
+
+  if(isL2){
+    cat("\n")
+    cat(formatC("Level 2:\n",width=-25), collapse="\n")
+    cat(formatC("Target variables:",width=-25), vrs$yvrs.L2, collapse="\n")
+    cat(formatC("Fixed effect predictors:",width=-25), vrs$pvrs.L2, collapse="\n")
+  }
 
   cat("\nPerformed", sprintf("%.0f",itr$burn), "burn-in iterations, and generated", sprintf("%.0f",itr$m),
       "imputed data sets,\neach", sprintf("%.0f",itr$iter), "iterations apart.",
@@ -35,7 +44,7 @@ print.mitml.summary <- function(x,...){
                   sapply(conv, function(z) median(z[,cc])),
                   sapply(conv, function(z) quantile(z[,cc],.75)),
                   sapply(conv, function(z) max(z[,cc])) ), ncol=6 )
-        rownames(cout) <- c("Beta:","Psi:","Sigma:")
+        rownames(cout) <- c("Beta:",if(isL2) "Beta2:","Psi:","Sigma:")
         colnames(cout) <- c("Min","25%","Mean","Median","75%","Max")
         clab <- switch(cc, Rhat="\nPotential scale reduction (Rhat, imputation phase):\n",
                            SDprop="\nGoodness of approximation (imputation phase):\n")
@@ -45,12 +54,19 @@ print.mitml.summary <- function(x,...){
         clab <- switch(cc, Rhat="\nLargest potential scale reduction:\n",
                            SDprop="\nPoorest approximation:\n")
         cat(clab)
-        maxb <- conv$beta[which.max(conv$beta[,cc]),]
-        maxp <- conv$psi[which.max(conv$psi[,cc]),]
-        maxs <- conv$sigma[which.max(conv$sigma[,cc]),]
-        cat("Beta: [", paste(maxb[1:2],collapse=",") ,"], ",
-            "Psi: [", paste(maxp[1:2],collapse=",") ,"], ",
-            "Sigma: [", paste(maxs[1:2],collapse=",") ,"]\n", sep="")
+        maxval <- lapply(conv, function(a) a[which.max(a[,cc]),1:2])
+        cat("Beta: [", paste(maxval$beta,collapse=",") ,"], ",
+            if(isL2) paste0("Beta2: [", paste(maxval$beta2,collapse=",") ,"], "),
+            "Psi: [", paste(maxval$psi,collapse=",") ,"], ",
+            "Sigma: [", paste(maxval$sigma,collapse=",") ,"]\n", sep="")
+        # maxb <- conv$beta[which.max(conv$beta[,cc]),]
+        # if(isL2) maxb2 <- conv$beta2[which.max(conv$beta2[,cc]),]
+        # maxp <- conv$psi[which.max(conv$psi[,cc]),]
+        # maxs <- conv$sigma[which.max(conv$sigma[,cc]),]
+        # cat("Beta: [", paste(maxb[1:2],collapse=",") ,"], ",
+        #     if(isL2) paste0("Beta2: [", paste(maxb2[1:2],collapse=",") ,"], "),
+        #     "Psi: [", paste(maxp[1:2],collapse=",") ,"], ",
+        #     "Sigma: [", paste(maxs[1:2],collapse=",") ,"]\n", sep="")
   
       }
 
@@ -67,20 +83,27 @@ print.mitml.summary <- function(x,...){
         cout <- sprintf(cout,fmt="%.3f")
         cout[neg] <- gsub("^-0","-",cout[neg])
         cout[!neg] <- gsub("^0"," ",cout[!neg])
-        cout <- matrix(cout, 3, 6)
+        cout <- matrix(cout, 3+isL2, 6)
         cout <- rbind(c(" Lag1"," Lagk","Lag2k"," Lag1"," Lagk","Lag2k"), cout)
-        rownames(cout) <- c("","Beta:","Psi:","Sigma:")
+        rownames(cout) <- c("","Beta:",if(isL2) "Beta2:","Psi:","Sigma:")
         colnames(cout) <- c(" Mean","",""," Max","","")
         cat("\nAutocorrelation (ACF, imputation phase):\n\n")
         print.table(cout)
   
         cat("\nLargest autocorrelation at lag k:\n")
-        maxb <- conv$beta[which.max(abs(conv$beta[,"lag-k"])),]
-        maxp <- conv$psi[which.max(abs(conv$psi[,"lag-k"])),]
-        maxs <- conv$sigma[which.max(abs(conv$sigma[,"lag-k"])),]
-        cat("Beta: [", paste(maxb[1:2],collapse=",") ,"], ",
-            "Psi: [", paste(maxp[1:2],collapse=",") ,"], ",
-            "Sigma: [", paste(maxs[1:2],collapse=",") ,"]\n", sep="")
+        maxval <- lapply(conv, function(a) a[which.max(abs(a[,"lag-k"])),1:2])
+        cat("Beta: [", paste(maxval$beta,collapse=",") ,"], ",
+            if(isL2) paste0("Beta2: [", paste(maxval$beta2,collapse=",") ,"], "),
+            "Psi: [", paste(maxval$psi,collapse=",") ,"], ",
+            "Sigma: [", paste(maxval$sigma,collapse=",") ,"]\n", sep="")
+        #maxb <- conv$beta[which.max(abs(conv$beta[,"lag-k"])),]
+        #maxb2 <- conv$beta2[which.max(abs(conv$beta2[,"lag-k"])),]
+        #maxp <- conv$psi[which.max(abs(conv$psi[,"lag-k"])),]
+        #maxs <- conv$sigma[which.max(abs(conv$sigma[,"lag-k"])),]
+        #cat("Beta: [", paste(maxb[1:2],collapse=",") ,"], ",
+        #    if(isL2) paste0("Beta2: [", paste(maxb2[1:2],collapse=",") ,"], "),
+        #    "Psi: [", paste(maxp[1:2],collapse=",") ,"], ",
+        #    "Sigma: [", paste(maxs[1:2],collapse=",") ,"]\n", sep="")
   
       }
     }

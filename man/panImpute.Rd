@@ -43,8 +43,7 @@ The \code{type} interface is designed to provide quick-and-easy imputations usin
 }
 At least one target variable and the cluster indicator must be specified.
 The intercept is automatically included both as a fixed and random effect.
-If a variable of type \code{-1} is found, then imputations are performed separately within each level of that variable.
-This is useful if the cluster variable (e.g., schools) is contained in an even larger grouping variable for which imputations models are not deemed comparable (e.g., federal states, educational systems).
+If a variable of type \code{-1} is found, then separate imputations are performed within each level of that variable.
 
 The \code{formula} argument is intended as more flexible and feature-rich interface to \code{pan}. Specifying the \code{formula} argument is similar to specifying other formulae in R.
 Given below is a list of operators that \code{panImpute} currently understands:
@@ -60,8 +59,8 @@ The intercept is automatically included both as a fixed and random effect, but i
 Note that, when specifying random effects other than the intercept, these will \emph{not} be automatically added as fixed effects and must be included explicitly.
 Any predictors defined by \code{I()} will be used for imputation but not included in the data set unless \code{save.pred=TRUE}.
 
-In order to run separate imputation models for an additional grouping variable, the \code{group} argument may be used.
-The variable name must be specified without quotation marks and must be present in the data set.
+In order to run separate imputations for each level of an additional grouping variable, the \code{group} argument may be used.
+The name of the grouping variable must be given in quotes.
 
 As a default prior, \code{panImpute} uses least informative inverse-Wishart priors for the covariance matrices of random effects and of residuals, that is, with minimum degrees of freedom (largest dispersion) and identity matrices for scale.
 For better control, the \code{prior} argument may be used for specifying alternative prior distributions.

@@ -11,7 +11,7 @@ Different organizations are denoted by the variable \code{id}.
 The data were simulated based on the results by Liao and Rupp (2005), as well as the secondary analyses of the same data given in Mathieu, Aguinis, Culpepper, and Chen, (2012).
 }
 \format{A data frame containing 1400 observations on 3 variables.}
-\usage{data(studentratings)}
+\usage{data(justice)}
 \references{
 Liao, H., & Rupp, D. E. (2005). The impact of justice climate and justice orientation on work outcomes: A cross-level multifoci framework. \emph{Journal of Applied Psychology}, 90, 242.256.
 

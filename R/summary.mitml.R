@@ -5,12 +5,14 @@ summary.mitml <- function(object, n.Rhat=3, goodness.of.appr=FALSE,
 
   # .SDprop <- mitml:::.SDprop
   # .GelmanRubin <- mitml:::.GelmanRubin
+  # .reducedACF <- mitml:::.reducedACF
 
   inc <- object$data
   ngr <- length(unique(attr(object$data,"group")))
   prm <- object$par.imputation
   iter <- dim(prm[[1]])[3]
   k <- object$iter$iter
+  isL2 <- attr(object$model,"is.L2")
 
   # percent missing
   mdr <- sapply(inc, FUN=function(x){mean(is.na(x))})
@@ -25,8 +27,8 @@ summary.mitml <- function(object, n.Rhat=3, goodness.of.appr=FALSE,
   ACF <- autocorrelation
   if(Rhat|SDprop|ACF){
 
-    conv <- list(beta=NULL,psi=NULL,sigma=NULL)
-    for(pp in c("beta","psi","sigma")){
+    conv <- c(list(beta=NULL), if(isL2) list(beta2=NULL), list(psi=NULL, sigma=NULL))
+    for(pp in names(conv)){
 
       ni <- dim(prm[[pp]])[1]
       nj <- dim(prm[[pp]])[2]
@@ -57,9 +59,11 @@ summary.mitml <- function(object, n.Rhat=3, goodness.of.appr=FALSE,
             # goodness of approximation
             if(SDprop) cmat[ind,"SDprop"] <- .SDprop(chn)
             # autocorrelation                   
-            if(ACF) cmat[ind,"lag-1"] <- .reducedACF(chn, lag=1, smooth=0)
-            if(ACF) cmat[ind,"lag-k"] <- .reducedACF(chn, lag=k, smooth=2, sd=.5)
-            if(ACF) cmat[ind,"lag-2k"] <- .reducedACF(chn, lag=2*k, smooth=2, sd=.5)
+            if(ACF){
+              cmat[ind,"lag-1"] <- .reducedACF(chn, lag=1, smooth=0)
+              cmat[ind,"lag-k"] <- .reducedACF(chn, lag=k, smooth=2, sd=.5)
+              cmat[ind,"lag-2k"] <- .reducedACF(chn, lag=2*k, smooth=2, sd=.5)
+            }
           }
         }
       }
@@ -81,9 +85,13 @@ summary.mitml <- function(object, n.Rhat=3, goodness.of.appr=FALSE,
   
   class(smr) <- "mitml.summary"
   smr
+
 }
 
 .reducedACF <- function(x, lag, smooth=0, sd=.5){
+
+  # check NA
+  if(all(is.na(x))) return(NA)
 
   n <- length(x)
   lag0 <- lag
@@ -95,7 +103,8 @@ summary.mitml <- function(object, n.Rhat=3, goodness.of.appr=FALSE,
 
   for(li in 1:length(lag)){
     ll <- lag[li]
-    ac[li] <- sum( y[1:(n-ll)] * y[1:(n-ll)+ll] ) / ss.y
+    # leave at 0 for constant value
+    ac[li] <- if(ss.y>0) sum( y[1:(n-ll)] * y[1:(n-ll)+ll] ) / ss.y else 0
     # naive method:
     # n <- length(x)-ll
     # mat <- matrix(c(x[1:n],x[(ll+1):n0]),n,2)

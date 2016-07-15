@@ -1,6 +1,25 @@
 # * RELEASE HISTORY OF THE 'mitml' PACKAGE:
 --
 
+# Version 0.3-3 (2016-07-04)
+--
+
+* jomoImpute:      added features (support for imputation of cluster-level
+                   variables, i.e., the two-level procedures "jomo2...")
+
+* print/summary:   revised appearance in two-level models (model summary is
+                   displayed separately by level for two-level imputation
+                   procedures)
+
+* plot:            additional value for print argument ("beta2", denoting the
+                   regression coefficients of the cluster-level imputation
+                   model)
+
+* jomoImpute:      bugfix (fixes error in the usage of starting values in cases
+                   with only continuous/no categorical data)
+
+* plot:            revised formatting of the plot title (order of variables)
+
 # Version 0.3-2 (2016-05-10)
 --
 
@@ -10,7 +29,7 @@
 * summary:         added features (summary of autocorrelation)
 
 * plot:            revised appearance and behavior (burn-in printed in grey,
-                   included Rhat and autocorrelation at lag-k in the posterior
+                   included Rhat and autocorrelation at lag k in the posterior
                    summary; for trace="burnin", the summary is now calculated
                    for the burn-in phase, not the imputation phase)
 
