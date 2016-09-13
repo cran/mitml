@@ -31,17 +31,17 @@ The \code{df.com} argument can either be a single number if the degrees of freed
 Using the \code{var.comp} argument, final estimates for variance components and related parameters can be requested.
 These will be shown as a separate table within the console output.
 Accessing variance components is highly dependent on the model being estimated and not implemented for all models. 
-Users may prefer calculating these estimates manually using \code{with.mitml.list} (see Example 3).
+Users may prefer calculating these estimates manually using \code{\link{with.mitml.list}} (see Example 3).
 No inferences are calculated for variance components.
 
 Currently, the procedure supports statistical models that define \code{coef} and \code{vcov} methods (e.g., \code{lm}) and multilevel models estimated with \code{lme4} or \code{nlme}.
-The arguments \code{qhat} and \code{uhat} allow for quite general calculation of final estimates regardless of model class.
+The arguments \code{qhat} and \code{uhat} allow for more general aggregation of parameter estimates regardless of model class.
 Support for further models may be added in future releases.
 
 }
 \value{
 
-Returns a list containing the final parameter and inferences as well as the relative increase in variance due to nonresponse and the fraction of missing information (Rubin, 1987).
+Returns a list containing the final parameter and inferences, the relative increase in variance due to nonresponse, and the fraction of missing information (Rubin, 1987).
 A \code{print} method is used for better readable console output. 
 
 }

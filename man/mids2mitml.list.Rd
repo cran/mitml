@@ -1,7 +1,7 @@
 \name{mids2mitml.list}
 \alias{mids2mitml.list}
 \title{Convert objects of class \code{mids} to \code{mitml.list}}
-\description{This function converts a \code{mids} class object (from the \code{mice} package) to \code{mitml.list}, such that it may be managed and analyzed using the functions of this package.}
+\description{This function converts a \code{mids} class object (as produced by the \code{mice} package) to \code{mitml.list}. The resulting object may be used in further analyses.}
 \usage{
 
 mids2mitml.list(x)

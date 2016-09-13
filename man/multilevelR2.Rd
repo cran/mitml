@@ -2,7 +2,7 @@
 \alias{multilevelR2}
 \title{Calculate R-squared measures for multilevel models}
 \description{
-Calculates several measures for the proportion of explaned variance in a fitted linear mixed-effects (i.e.,) multilevel model (or a list of fitted models).
+Calculates several measures for the proportion of explained variance in a fitted linear mixed-effects (i.e.,) multilevel model (or a list of fitted models).
 }
 
 \usage{
@@ -13,7 +13,7 @@ multilevelR2(model, print=c("RB1","RB2","SB","MVP"))
 
 \arguments{
 
-  \item{model}{Either a fitted linear mixed-effects model fit using \code{lme4} or \code{nlme}, or a list of fitted models as produced by \code{with.mitml.list}.}
+  \item{model}{Either a fitted linear mixed-effects model as produced by \code{lme4} or \code{nlme}, or a list of fitted models as produced by \code{with.mitml.list}.}
   \item{print}{A character vector denoting which measures should be calculated (see details). Default is to printing all measures.}
 
 }

@@ -5,10 +5,6 @@ plot.mitml <- function(x, print=c("beta","beta2","psi","sigma"), pos=NULL, group
 
 # plot method for objects of class "mitml"
 
-  # .movingAverage <- mitml:::.movingAverage
-  # .smoothedACF <- mitml:::.smoothedACF
-  # .GelmanRubin <- mitml:::.GelmanRubin
-
   # retrieve data and variable names (predictors)
   vrs <- x$model
   clus <- x$model$clus
@@ -33,7 +29,7 @@ plot.mitml <- function(x, print=c("beta","beta2","psi","sigma"), pos=NULL, group
   # check print and position for selected parameters
   if(!is.null(pos) & length(print)>1){
     pos <- NULL
-    warning("The 'pos' argument may only be used when 'print' is cleary defined as one of 'beta', 'psi', or 'sigma' (see '?plot').")
+    warning("The 'pos' argument may only be used when 'print' is cleary defined as one of 'beta', 'beta2', 'psi', or 'sigma' (see '?plot').")
   }
 
   # grouping
@@ -151,7 +147,7 @@ plot.mitml <- function(x, print=c("beta","beta2","psi","sigma"), pos=NULL, group
       if(!is.null(pos)){
         if(!(pos[1]==ir & pos[2]==ic)) next
       }
-    
+
       if(export!="none"){
         filename <- paste("BETA_",gfile,names(yvrs[ic]),"_ON_",names(pvrs[ir]),".",export,sep="")
         filename <- gsub("[(),]","",filename)
@@ -159,7 +155,7 @@ plot.mitml <- function(x, print=c("beta","beta2","psi","sigma"), pos=NULL, group
         out.args <- c(list(file=file.path(out,filename)),dev.args)
         do.call(export, out.args)
       }
-      
+
       layout(matrix(c(1,2,3,4),2,2), c(5,1), c(1.13,1))
 
       # choose section of trace
@@ -240,14 +236,14 @@ plot.mitml <- function(x, print=c("beta","beta2","psi","sigma"), pos=NULL, group
                        "Rhat:  ", sprintf(fmt="%.3f", .GelmanRubin(t(drw),n.Rhat)), "\n",
                        "ACF-k: ", sprintf(fmt="%.3f", .smoothedACF(ac,k=lag,sd=.5)), "\n",
                        sep=""), adj=c(0,.5), cex=.8, family="mono", font=2, ...)
-    
+
       if(export!="none"){
         dev.off()
       }else{
         devAskNewPage(ask=TRUE)
       }
   }}}
-  
+
   # *** plots for fixed regression coefficients at level 2
   #
 
@@ -268,7 +264,7 @@ plot.mitml <- function(x, print=c("beta","beta2","psi","sigma"), pos=NULL, group
       if(!is.null(pos)){
         if(!(pos[1]==ir & pos[2]==ic)) next
       }
-    
+
       if(export!="none"){
         filename <- paste("BETA2_",gfile,names(yvrs.L2[ic]),"_ON_",names(pvrs.L2[ir]),".",export,sep="")
         filename <- gsub("[(),]","",filename)
@@ -276,7 +272,7 @@ plot.mitml <- function(x, print=c("beta","beta2","psi","sigma"), pos=NULL, group
         out.args <- c(list(file=file.path(out,filename)),dev.args)
         do.call(export, out.args)
       }
-      
+
       layout(matrix(c(1,2,3,4),2,2), c(5,1), c(1.13,1))
 
       # choose section of trace
@@ -357,7 +353,7 @@ plot.mitml <- function(x, print=c("beta","beta2","psi","sigma"), pos=NULL, group
                        "Rhat:  ", sprintf(fmt="%.3f", .GelmanRubin(t(drw),n.Rhat)), "\n",
                        "ACF-k: ", sprintf(fmt="%.3f", .smoothedACF(ac,k=lag,sd=.5)), "\n",
                        sep=""), adj=c(0,.5), cex=.8, family="mono", font=2, ...)
-    
+
       if(export!="none"){
         dev.off()
       }else{
@@ -406,7 +402,7 @@ plot.mitml <- function(x, print=c("beta","beta2","psi","sigma"), pos=NULL, group
       if(!is.null(pos)){
         if(!(pos[1]==ir & pos[2]==ic)) next
       }
-    
+
       if(export!="none"){
         filename <- paste0("PSI_", gfile,
                            names(yvrs.comb[bvec[2,ir]]),
@@ -420,7 +416,7 @@ plot.mitml <- function(x, print=c("beta","beta2","psi","sigma"), pos=NULL, group
         out.args <- c(list(file=file.path(out,filename)),dev.args)
         do.call(export, out.args)
       }
- 
+
       layout(matrix(c(1,2,3,4),2,2), c(5,1), c(1.13,1))
 
       switch(trace,
@@ -558,12 +554,12 @@ plot.mitml <- function(x, print=c("beta","beta2","psi","sigma"), pos=NULL, group
       if(!is.null(pos)){
         if(!(pos[1]==ir2 & pos[2]==ic)) next
       }
-    
+
       if(export!="none"){
         filename <- paste0("SIGMA_", gfile,
                            names(yvrs[ir]),
                            "_WITH_",
-                           names(yvrs[ic]), 
+                           names(yvrs[ic]),
                            if(rl1) paste0("_",clus,clus2[icl]),
                            ".",export)
         filename <- gsub("[(),]","",filename)
@@ -688,8 +684,8 @@ plot.mitml <- function(x, print=c("beta","beta2","psi","sigma"), pos=NULL, group
     N <- length(x)
     y <- rep(NA,N)
     i <- seq(B+1 , N-B)
-    xdiff <- x1[ -seq(1,B) ] - x1[ -seq(N-B+1,N) ] 
-    xdiff <- xdiff[ - seq(1,B) ] 
+    xdiff <- x1[ -seq(1,B) ] - x1[ -seq(N-B+1,N) ]
+    xdiff <- xdiff[ - seq(1,B) ]
 
     y[i]  <- ( x1[i] + xdiff - c(0,x1[ -seq(N-2*B,N) ]) ) / (2*B+1)
 

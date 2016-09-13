@@ -1,7 +1,7 @@
 \name{panImpute}
 \alias{panImpute}
 \title{Impute multilevel missing data using \code{pan}}
-\description{This function provides a user-friendly interface to the \code{pan} package for multiple imputation of multilevel data (Schafer & Yucel, 2002).
+\description{This function provides an interface to the \code{pan} package for multiple imputation of multilevel data (Schafer & Yucel, 2002).
 Imputations can be generated using \code{type} or \code{formula}, which offer different options for model specification.}
 
 \usage{
@@ -29,10 +29,11 @@ panImpute(data, type, formula, n.burn=5000, n.iter=100, m=10, group=NULL,
 
 \details{
 
-This function serves as the main interface to the \code{pan} algorithm.
+This function serves as an interface to the \code{pan} algorithm.
 The imputation model can be specified using either the \code{type} or the \code{formula} argument.
 
-The \code{type} interface is designed to provide quick-and-easy imputations using \code{pan}. The \code{type} argument must be an integer vector denoting the role of each variable in the imputation model:
+The \code{type} interface is designed to provide quick-and-easy imputations using \code{pan}.
+The \code{type} argument must be an integer vector denoting the role of each variable in the imputation model:
 \itemize{
   \item{\code{1}: target variables containing missing data}
   \item{\code{2}: predictors with fixed effect on all targets (completely observed)}
@@ -54,20 +55,20 @@ Given below is a list of operators that \code{panImpute} currently understands:
   \item{\code{|}: denotes cluster-specific random effects and specifies the cluster indicator (i.e., \code{1|ID})}
   \item{\code{I()}: defines functions to be interpreted by \code{model.matrix}}
 }
-Predictors are allowed to have fixed effects, random effects or both on all target variables.
-The intercept is automatically included both as a fixed and random effect, but it can be constrained if necessary (see examples).
+Predictors are allowed to have fixed effects, random effects, or both on all target variables.
+The intercept is automatically included both as a fixed and a random effect, but it can be constrained if necessary (see examples).
 Note that, when specifying random effects other than the intercept, these will \emph{not} be automatically added as fixed effects and must be included explicitly.
 Any predictors defined by \code{I()} will be used for imputation but not included in the data set unless \code{save.pred=TRUE}.
 
 In order to run separate imputations for each level of an additional grouping variable, the \code{group} argument may be used.
 The name of the grouping variable must be given in quotes.
 
-As a default prior, \code{panImpute} uses least informative inverse-Wishart priors for the covariance matrices of random effects and of residuals, that is, with minimum degrees of freedom (largest dispersion) and identity matrices for scale.
+As a default prior, \code{panImpute} uses "least informative" inverse-Wishart priors for the covariance matrix of random effects and the covariance matrix of residuals, that is, with minimum degrees of freedom (largest dispersion) and identity matrices for scale.
 For better control, the \code{prior} argument may be used for specifying alternative prior distributions.
 These must be supplied as a list containing the following components:
 \itemize{
-  \item{\code{a}: degrees of freedom for the residual covariance matrix}
-  \item{\code{Binv}: scale matrix for the residual covariance matrix}
+  \item{\code{a}: degrees of freedom for the covariance matrix of residuals}
+  \item{\code{Binv}: scale matrix for the covariance matrix of residuals}
   \item{\code{c}: degrees of freedom for the covariance matrix of random effects}
   \item{\code{Dinv}: scale matrix for the covariance matrix of random effects}
 }
@@ -76,15 +77,14 @@ A sensible choice for a diffuse non-default prior is to set the degrees of freed
 
 \value{
 
-Returns an object of class \code{mitml}.
-A \code{mitml} class object is a list, each containing the following components:
+Returns an object of class \code{mitml}, containing the following components:
 
-  \item{data}{The original (incomplete) data set that has been sorted according to the cluster variable and (if given) the grouping variable. An attribute \code{"sort"} contains the original row order. An attribute \code{"group"} contains the optional grouping variable.}
+  \item{data}{The original (incomplete) data set, sorted according to the cluster variable and (if given) the grouping variable, with several attributes describing the original row order (\code{"sort"}) and grouping (\code{"group"}.}
   \item{replacement.mat}{A matrix containing the multiple replacements (i.e., imputations) for each missing value. The replacement matrix contains one row for each missing value and one one column for each imputed data set.}
   \item{index.mat}{A matrix containing the row and column index for each missing value. The index matrix is used to \emph{link} the missing values in the data set with their corresponding rows in the replacement matrix.}
   \item{call}{The matched function call.}
   \item{model}{A list containing the names of the cluster variable, the target variables, and the predictor variables with fixed and random effects, respectively.}
-  \item{random.L1}{A character string denoting the handling of random residual covariance matrices (see \code{jomoImpute}).}
+  \item{random.L1}{A character string denoting the handling of random residual covariance matrices (not used here; see \code{jomoImpute}).}
   \item{prior}{The prior parameters used in the imputation model.}
   \item{iter}{A list containing the number of burn-in iterations, the number of iterations between imputations, and the number of imputed data sets.}
   \item{par.burnin}{A multi-dimensional array containing the parameters of the imputation model from the burn-in phase.}
@@ -94,8 +94,8 @@ A \code{mitml} class object is a list, each containing the following components:
 
 \note{
 
-For objects of class \code{mitml}, methods for the generic functions \code{print}, \code{summary} and \code{plot} have been defined.
-\code{mitmlComplete} is used to extract the imputed data sets.
+For objects of class \code{mitml}, methods for the generic functions \code{print}, \code{summary}, and \code{plot} have been defined.
+\code{mitmlComplete} is used for extracting the imputed data sets.
 
 }
 

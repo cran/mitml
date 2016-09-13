@@ -1,12 +1,12 @@
 write.mitmlMplus <- function(x, filename, suffix="list", sep="\t", dec=".", na.value=-999){
 # write text files that can be read into Mplus
-  
+
   if(!"mitml"%in%class(x) & !"mitml.list"%in%class(x)) stop("'x' must be of class 'mitml' or 'mitml.list'.")
 
   if("mitml"%in%class(x)){
     il <- mitmlComplete(x,1:x$iter$m)
     m <- x$iter$m
-  }else{ 
+  }else{
     il <- x
     m <- length(x)
   }
@@ -42,7 +42,7 @@ write.mitmlMplus <- function(x, filename, suffix="list", sep="\t", dec=".", na.v
   cat(file=cname, "\n\n", paste(colnames(out),collapse=" "), sep="", append=T)
   if(length(conv)>0){
     cat(file=cname, "\n\n", "Factors were converted to numeric values as follows:\n ",sep="", append=T)
-    for(cc in 1:length(conv)){ 
+    for(cc in 1:length(conv)){
       cat(file=cname, "\n", names(conv[cc]), ":\n", sep="", append=T)
       write.table(conv[[cc]],file=cname, row.names=F,col.names=F, sep=" = ", quote=F, append=T)
     }
@@ -58,9 +58,7 @@ write.mitmlMplus <- function(x, filename, suffix="list", sep="\t", dec=".", na.v
     "  missing = all (",na.value,");"
   )
 
-
-
-  invisible() 
+  invisible()
 
 }
 

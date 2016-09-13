@@ -2,7 +2,7 @@
 \alias{summary.mitml}
 \title{Summary measures for imputation models}
 \description{
-Provides summary statistics and additional information regarding the imputation process.
+Provides summary statistics and additional information on imputations in objects of class \code{mitml}.
 }
 
 \usage{
@@ -23,19 +23,19 @@ Provides summary statistics and additional information regarding the imputation 
 
 \details{
 
-The \code{summary} method calculates summary statistics for objects of class \code{mitml}, gives information on the imputation process, and the amount of missing data per variable.
+The \code{summary} method calculates summary statistics for objects of class \code{mitml} as produced by \code{\link{panImpute}} and \code{\link{jomoImpute}}.
+The output includes the potential scale reduction factor (PSRF, or \eqn{\hat{R}}) and (optionally) the goodness of approximation and autocorrelation. 
 
-The output includes the potential scale reduction factor (PSRF, or \eqn{\hat{R}}), which is calculated for each parameter of the imputation model as a measure of convergence (Gelman and Rubin, 1992).
+The PSRF is calculated for each parameter of the imputation model and may be interpreted as a measure of convergence (Gelman and Rubin, 1992).
 Calculation of the PSRFs can be suppressed by setting \code{n.Rhat=NULL}.
-
 The PSRFs are not computed from different chains, but by dividing each chain from the imputation phase into a number of sequences as denoted by \code{n.Rhat}.
 This is slightly different from the original method proposed by Gelman and Rubin.
 
 The goodness of approximation indicates what proportion of the posterior standard deviation is due to simulation error.
 For multiple imputation, the goodness of approximation is not essential; it should be considered only if posterior summaries, such as the EAP, are of interest.
 
-The summary of the autocorrelation includes estimates of the autocorrelation in the parameter chains at lag 1 (i.e., for consecutive draws) and for lags \eqn{k} and \eqn{2k}, where \eqn{k} is the number of iterations between imputations.
-For lag \eqn{k} and \eqn{2k}, the autocorrelation is slightly smoothed to reduce random noise (see \code{plot.mitml}).
+The autocorrelation includes estimates of the autocorrelation in the parameter chains at lag 1 (i.e., for consecutive draws) and for lags \eqn{k} and \eqn{2k}, where \eqn{k} is the number of iterations between imputations.
+For lag \eqn{k} and \eqn{2k}, the autocorrelation is slightly smoothed to reduce the influence of noise on the estimates (see \code{\link{plot.mitml}}).
 
 }
 
@@ -52,7 +52,7 @@ Hoff, P. D. (2009). \emph{A first course in Bayesian statistical methods}. New Y
 }
 
 \author{Simon Grund}
-\seealso{\code{\link{panImpute}},\code{\link{jomoImpute}}}
+\seealso{\code{\link{panImpute}}, \code{\link{jomoImpute}}, \code{\link{plot.mitml}}}
 \examples{
 data(studentratings)
 

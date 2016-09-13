@@ -1,5 +1,5 @@
 # ***
-# Functions to extract (fixed) coefficients and SEs/Covariance from 
+# Functions to extract (fixed) coefficients and SEs/Covariance from
 # supported classes of statistical models
 #
 
@@ -100,7 +100,7 @@
     i <- which(par1%in%dpar)
     Qhat <- sapply(model,coef)[dpar,]
     Uhat <- vapply(model,vcov, FUN.VALUE=matrix(0,p,p))[i,i,]
- 
+
   }
   out <- list(Qhat=Qhat,Uhat=Uhat,nms=nms)
   out

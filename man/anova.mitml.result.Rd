@@ -2,7 +2,7 @@
 \alias{anova.mitml.result}
 \title{Compare several nested models}
 \description{
-Performs model comparisons for a series of nested statistical models fit using \code{with.mitml.list}.
+Performs model comparisons for a series of nested statistical models fitted using \code{with.mitml.list}.
 }
 
 \usage{
@@ -20,7 +20,7 @@ Performs model comparisons for a series of nested statistical models fit using \
 
 \details{
 
-  This function performs several model comparisons between models fit using \code{with.mitml.list}.
+  This function performs several model comparisons between models fitted using \code{with.mitml.list}.
   If possible, the models are compared using the \eqn{D_3} statistic (Meng & Rubin, 1992).
   If this method is unavailable, the \eqn{D_2} statistic is used instead (Li, Meng, Raghunathan, & Rubin, 1991).
   The \eqn{D_3} method currently supports linear models and linear mixed-effects models with a single cluster variable as estimated by \code{lme4} or \code{nlme} (see Laird, Lange, & Stram, 1987).

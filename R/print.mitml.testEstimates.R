@@ -23,7 +23,7 @@ print.mitml.testEstimates <- function(x,...){
     out[,1] <- format(c("",rownames(est)))
     out[1,-1] <- format(colnames(est),justify="right",width=w)
     out[-1,-1] <- format(val,justify="right",width=w)
-  
+
     for(i in 1:nrow(out)) cat(out[i,],"\n")
   }
 
@@ -36,7 +36,7 @@ print.mitml.testEstimates <- function(x,...){
     out[,1] <- format(c("",rownames(vc)))
     out[1,-1] <- format("Estimate",justify="right",width=w)
     out[-1,-1] <- format(val,justify="right",width=w)
-    
+
     for(i in 1:nrow(out)) cat(out[i,],"\n")
   }
 

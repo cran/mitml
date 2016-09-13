@@ -6,7 +6,7 @@ write.mitmlSPSS <- function(x, filename, sep="\t", dec=".", na.value=-999, synta
 
   if("mitml"%in%class(x)){
     il <- mitmlComplete(x,0:x$iter$m)
-  }else{ 
+  }else{
     il <- x
   }
 
@@ -39,7 +39,7 @@ write.mitmlSPSS <- function(x, filename, sep="\t", dec=".", na.value=-999, synta
     cat(file=sf,"SET DECIMAL", d, ".\n")
     if(!is.null(locale)) cat(file=sf, "SET LOCALE",locale,".\n", append=T)
     cat(file=sf, "\n", append=T)
-  
+
     cat(file=sf, append=T,
       "GET DATA\n",
       "/TYPE=TXT\n",
@@ -92,7 +92,7 @@ write.mitmlSPSS <- function(x, filename, sep="\t", dec=".", na.value=-999, synta
 
   }
 
-  invisible() 
+  invisible()
 
 }
 

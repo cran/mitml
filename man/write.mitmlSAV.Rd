@@ -14,7 +14,7 @@ write.mitmlSAV(x, filename)
 
 \arguments{
 
-  \item{x}{An object of class \code{mitml} or \code{mitml.list} (i.e., either produced by \code{panImpute}/\code{jomoImpute} or \code{mitmlComplete}).}
+  \item{x}{An object of class \code{mitml} or \code{mitml.list} as produced by \code{panImpute}, \code{jomoImpute}, \code{mitmlComplete}, or similar).}
   \item{filename}{Name of the destination file, to be specified with or without file extension. The file extension (\code{.sav}) is appended if necessary.}
 
 }
@@ -24,7 +24,7 @@ write.mitmlSAV(x, filename)
 This function exports multiply imputed data sets to a single \code{.sav} file, in which an \code{Imputation_} variable separates the original data and the various imputed data sets.
 Thus, \code{write.mitmlSAV} exports directly to the native SPSS format.
 
-Alternatively, \code{write.mitmlSPSS} may be used for creating separate text and SPSS syntax files; an option that offers more control over the data format.
+Alternatively, \code{\link{write.mitmlSPSS}} may be used for creating separate text and SPSS syntax files; an option that offers more control over the data format.
 
 }
 

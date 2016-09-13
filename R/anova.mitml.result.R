@@ -6,7 +6,7 @@ anova.mitml.result <- function(object, ...){
 
   # default
   lr.method <- "default"
-  # lm 
+  # lm
   if(cls[1]=="lm") lr.method <- "lm"
   # merMod (lme4)
   if(any(grepl("^l?merMod$",cls[1]))){
@@ -26,7 +26,7 @@ anova.mitml.result <- function(object, ...){
     warning("The 'D3' method is currently not supported for models of class '",cls[1],"'. Switching to 'D2'.")
     method <- "D2"
   }
-  
+
   # *** testModels
   #
 
@@ -35,7 +35,7 @@ anova.mitml.result <- function(object, ...){
   # order models
   nm <- length(modlist)
   df <- integer(nm)
-  for(mm in 1:nm){ 
+  for(mm in 1:nm){
     df[mm] <- switch(lr.method,
       lmer=attr(logLik(modlist[[mm]][[1]]),"df"),
       nlme=attr(logLik(modlist[[mm]][[1]]),"df"),

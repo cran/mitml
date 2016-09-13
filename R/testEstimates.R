@@ -18,7 +18,7 @@ testEstimates <- function(model, qhat, uhat, var.comp=FALSE, df.com=NULL){
       Qhat <- qhat
       Uhat <- uhat
     }
-    if(is.null(dim(Qhat))){ 
+    if(is.null(dim(Qhat))){
       dim(Qhat) <- c(1,length(qhat))
       nms <- if(is.list(qhat)) names(qhat[[1]]) else if(is.matrix(qhat)) rownames(qhat) else NULL
       dimnames(Qhat) <- list(nms, NULL)
@@ -32,7 +32,7 @@ testEstimates <- function(model, qhat, uhat, var.comp=FALSE, df.com=NULL){
     B <- apply(Qhat,1,var)
     T <- Ubar + (1+m^(-1)) * B
 
-    r <- (1+m^(-1))*B/Ubar 
+    r <- (1+m^(-1))*B/Ubar
     v <- vm <- (m-1)*(1+r^(-1))^2
     fmi <- (r+2/(v+3))/(r+1)
 
@@ -86,7 +86,7 @@ testEstimates <- function(model, qhat, uhat, var.comp=FALSE, df.com=NULL){
     m <- length(model)
     Qhat <- fe$Qhat
     Uhat <- fe$Uhat
-    if(is.null(dim(Qhat))){ 
+    if(is.null(dim(Qhat))){
       dim(Qhat) <- c(1,m)
       dim(Uhat) <- c(1,m)
       dimnames(Qhat) <- dimnames(Uhat) <- list(fe$nms, NULL)
@@ -97,7 +97,7 @@ testEstimates <- function(model, qhat, uhat, var.comp=FALSE, df.com=NULL){
     B <- apply(Qhat,1,var)
     T <- Ubar + (1+m^(-1)) * B
 
-    r <- (1+m^(-1))*B/Ubar 
+    r <- (1+m^(-1))*B/Ubar
     v <- vm <- (m-1)*(1+r^(-1))^2
     fmi <- (r+2/(v+3))/(r+1)
 
@@ -126,7 +126,7 @@ testEstimates <- function(model, qhat, uhat, var.comp=FALSE, df.com=NULL){
         default=list(vlist=NULL,addp=NULL)
       )
       if(vc.method=="default") warning("Computation of variance components not supported for objects of class '", cls[1], "' (see ?with.mitml.list for manual calculation).")
-   
+
       vlist <- vc$vlist
       addp <- vc$addp
 
@@ -156,7 +156,7 @@ testEstimates <- function(model, qhat, uhat, var.comp=FALSE, df.com=NULL){
     }
 
   }
-  
+
   out <- list(
     call=match.call(),
     estimates=out,

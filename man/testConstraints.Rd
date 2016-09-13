@@ -21,21 +21,20 @@ testConstraints(model, qhat, uhat, constraints, method=c("D1","D2"), df.com=NULL
 }
 \details{
 
-This function is similar in functionality to \code{testModels} but extended to arbitrary functions (or constraints) of the model parameters.
-The function is based on the Delta method (e.g., Casella & Berger, 2002) according to which any function of the model parameters can be tested using Wald-like methods.
-It is assumed that the parameters can be extracted using \code{coef} and \code{vcov} methods (or similar; e.g., regression coefficients, fixed effects in multilevel models)
-Alternatively, hypothesis tests can be carried out using user-supplied matrices/arrays or lists (\code{qhat} and \code{uhat}, see examples).
+This function is similar in functionality to \code{\link{testModels}} but extended to arbitrary functions (or constraints) of the model parameters.
+The function is based on the Delta method (e.g., Casella & Berger, 2002) according to which any function of the parameters can be tested using Wald-like methods, assuming that their sampling distribution is approximately normal.
+It is assumed that the parameters can be extracted using \code{coef} and \code{vcov} methods from the fitted models (or similar; e.g., regression coefficients, fixed effects in multilevel models)
+In cases where this is not possible, hypothesis tests can be carried out using user-supplied matrices/arrays or lists (\code{qhat} and \code{uhat}, see examples).
 
 Constraints and functions of the model parameters can be specified in the \code{constraints} argument.
 The constraints must be supplied as a character vector, where each string denotes a function or a constraint to be tested (see examples).
 
-As in \code{testModels}, the parameter vector is assumed to follow a multivariate normal distribution.
-The Wald-like tests can be aggregated across data sets either by method \eqn{D_1} (Li, Raghunathan & Rubin, 1991) or \eqn{D_2} (Li, Meng, Raghunathan & Rubin, 1991), where \eqn{D_1} operates on the constrained estimates and standard errors, and \eqn{D_2} operates on the Wald-statistics.
+The Wald-like tests that are carried out by \code{testConstraints} can be aggregated across data sets by methods \eqn{D_1} (Li, Raghunathan & Rubin, 1991) and \eqn{D_2} (Li, Meng, Raghunathan & Rubin, 1991), where \eqn{D_1} operates on the constrained estimates and standard errors, and \eqn{D_2} operates on the Wald-statistics (for an explanation, see \code{testModels}).
 
 For \eqn{D_1}, the complete-data degrees of freedom can be adjusted for smaller samples by specifying \code{df.com}.
 
 Currently, the procedure supports statistical models that define \code{coef} and \code{vcov} methods (e.g., \code{lm}) and multilevel models estimated with \code{lme4} or \code{nlme}.
-The arguments \code{qhat} and \code{uhat} allow for quite general hypothesis tests regardless of model class.
+The arguments \code{qhat} and \code{uhat} allow for more general hypothesis tests regardless of model class.
 Support for further models may be added in future releases.
 
 }

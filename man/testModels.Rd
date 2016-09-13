@@ -15,19 +15,19 @@ testModels(model, null.model, method=c("D1","D2","D3"),
 
   \item{model}{A list of fitted statistical models (see examples).}
   \item{null.model}{A list of fitted (more restrictive) statistical models.}
-  \item{method}{A character string denoting the method by which the test is performed. Can be either \code{"D1"}, \code{"D2"} or \code{"D3"} (see details). Default is to \code{"D1"}.}
+  \item{method}{A character string denoting the method by which the test is performed. Can be either \code{"D1"}, \code{"D2"} or \code{"D3"} (see details). Default is \code{"D1"}.}
   \item{use}{A character string denoting Wald- or likelihood-based based tests. Can be either \code{"wald"} or \code{"likelihood"}. Only used if \code{method="D2"}.}
   \item{df.com}{(optional) A single number or a numeric vector denoting the complete-data degrees of freedom for the hypothesis test. Only used if \code{method="D1"}.}
 
 }
 \details{
 
-This function compares two nested statistical models which differ by one or several parameters.
+This function compares two nested statistical models which differ by one or more parameters.
 In other words, the function performs Wald-like and likelihood-ratio hypothesis tests for the statistical parameters by which the two models differ.
 
-The basic approach to Wald-like inference for multi-dimensional estimands was introduced Rubin (1987) and further developed by Li, Raghunathan and Rubin (1991).
-This procedure is commonly referred to as \eqn{D_1} and can be called using \code{method="D1"}.
-\eqn{D_1} is the multi-parameter equivalent of \code{testEstimates}, that is, it tests multiple parameters simultaneously.
+The general approach to Wald-like inference for multi-dimensional estimands was introduced Rubin (1987) and further developed by Li, Raghunathan and Rubin (1991).
+This procedure is commonly referred to as \eqn{D_1} and can be used by setting \code{method="D1"}.
+\eqn{D_1} is the multi-parameter equivalent of \code{\link{testEstimates}}, that is, it tests multiple parameters simultaneously.
 For \eqn{D_1}, the complete-data degrees of freedom are assumed to be infinite, but they can be adjusted for smaller samples by supplying \code{df.com} (Reiter, 2007).
 
 An alternative method for Wald-like hypothesis tests was suggested by Li, Meng, Raghunathan and Rubin (1991).
@@ -35,14 +35,14 @@ The procedure is often called \eqn{D_2} and can be used by setting \code{method=
 \eqn{D_2} calculates the Wald-test directly for each data set and then aggregates the resulting \eqn{\chi^2} values.
 The source of these values is specified by the \code{use} argument.
 If \code{use="wald"} (the default), then a Wald-like hypothesis test similar to \eqn{D_1} is performed.
-If \code{use="likelihood"}, then the two models are compared by their likelihood.
+If \code{use="likelihood"}, then the two models are compared through their likelihood.
 
 A third method relying on likelihood-based comparisons was suggested by Meng and Rubin (1992).
 This procedure is referred to as \eqn{D_3} and can be used by setting \code{method="D3"}.
 \eqn{D_3} compares the two models by aggregating the likelihood-ratio test across multiply imputed data sets.
 
 In general, Wald-like hypothesis tests (\eqn{D_1} and \eqn{D_2}) are appropriate if the parameters can be assumed to follow a multivariate normal distribution (e.g., regression coefficients, fixed effects in multilevel models).
-Likelihood-based comparisons (\eqn{D_2} and \eqn{D_3}) may also be used for variance components.
+Likelihood-based comparisons (\eqn{D_2} and \eqn{D_3}) are also appropriate in such cases and may also be used for variance components.
 
 The function supports different classes of statistical models depending on which \code{method} is chosen. \eqn{D_1} supports quite general models as long as they define \code{coef} and \code{vcov} methods (or similar) for extracting the parameter estimates and their estimated covariance matrix. 
 \eqn{D_2} can be used for the same models (if \code{use="wald"}, or alternatively, for models that define a \code{logLik} method (if \code{use="likelihood"}).
@@ -52,7 +52,7 @@ Support for other statistical models may be added in future releases.
 }
 \value{
 
-Returns a list containing the results of the model comparison as well as the relative increase in variance due to nonresponse (Rubin, 1987).
+Returns a list containing the results of the model comparison, and the relative increase in variance due to nonresponse (Rubin, 1987).
 A \code{print} method is used for better readable console output. 
 
 }
@@ -80,7 +80,7 @@ Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}. Hobo
 
 \author{Simon Grund}
 
-\seealso{\code{\link{testEstimates}}, \code{\link{with.mitml.list}}}
+\seealso{\code{\link{anova.mitml.result}}, \code{\link{testEstimates}}, \code{\link{testConstraints}}, \code{\link{with.mitml.list}}}
 \examples{
 data(studentratings)
 

@@ -1,7 +1,7 @@
 \name{as.mitml.list}
 \alias{as.mitml.list}
 \title{Convert a list of data sets to \code{mitml.list}}
-\description{This function adds a \code{mitml.list} class attribute to a list of data frames. The resulting object can be used with the other functions of this package.}
+\description{This function adds a \code{mitml.list} class attribute to a list of data frames. The resulting object can be used in further analyses.}
 \usage{
 
 as.mitml.list(x)
@@ -19,7 +19,7 @@ The list entries are converted to \code{data.frame} if necessary, in which case 
 
 }
 \author{Simon Grund}
-\seealso{\code{\link{is.mitml.list}}}
+\seealso{\code{\link{is.mitml.list}},\code{\link{long2mitml.list}}}
 
 \examples{
 # data frame with 'imputation' indicator

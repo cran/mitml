@@ -50,7 +50,7 @@ print.mitml.summary <- function(x,...){
                            SDprop="\nGoodness of approximation (imputation phase):\n")
         cat(clab,"\n")
         print.table(round(cout,3))
-  
+
         clab <- switch(cc, Rhat="\nLargest potential scale reduction:\n",
                            SDprop="\nPoorest approximation:\n")
         cat(clab)
@@ -59,15 +59,7 @@ print.mitml.summary <- function(x,...){
             if(isL2) paste0("Beta2: [", paste(maxval$beta2,collapse=",") ,"], "),
             "Psi: [", paste(maxval$psi,collapse=",") ,"], ",
             "Sigma: [", paste(maxval$sigma,collapse=",") ,"]\n", sep="")
-        # maxb <- conv$beta[which.max(conv$beta[,cc]),]
-        # if(isL2) maxb2 <- conv$beta2[which.max(conv$beta2[,cc]),]
-        # maxp <- conv$psi[which.max(conv$psi[,cc]),]
-        # maxs <- conv$sigma[which.max(conv$sigma[,cc]),]
-        # cat("Beta: [", paste(maxb[1:2],collapse=",") ,"], ",
-        #     if(isL2) paste0("Beta2: [", paste(maxb2[1:2],collapse=",") ,"], "),
-        #     "Psi: [", paste(maxp[1:2],collapse=",") ,"], ",
-        #     "Sigma: [", paste(maxs[1:2],collapse=",") ,"]\n", sep="")
-  
+
       }
 
       # summary for ACF
@@ -89,22 +81,14 @@ print.mitml.summary <- function(x,...){
         colnames(cout) <- c(" Mean","",""," Max","","")
         cat("\nAutocorrelation (ACF, imputation phase):\n\n")
         print.table(cout)
-  
+
         cat("\nLargest autocorrelation at lag k:\n")
         maxval <- lapply(conv, function(a) a[which.max(abs(a[,"lag-k"])),1:2])
         cat("Beta: [", paste(maxval$beta,collapse=",") ,"], ",
             if(isL2) paste0("Beta2: [", paste(maxval$beta2,collapse=",") ,"], "),
             "Psi: [", paste(maxval$psi,collapse=",") ,"], ",
             "Sigma: [", paste(maxval$sigma,collapse=",") ,"]\n", sep="")
-        #maxb <- conv$beta[which.max(abs(conv$beta[,"lag-k"])),]
-        #maxb2 <- conv$beta2[which.max(abs(conv$beta2[,"lag-k"])),]
-        #maxp <- conv$psi[which.max(abs(conv$psi[,"lag-k"])),]
-        #maxs <- conv$sigma[which.max(abs(conv$sigma[,"lag-k"])),]
-        #cat("Beta: [", paste(maxb[1:2],collapse=",") ,"], ",
-        #    if(isL2) paste0("Beta2: [", paste(maxb2[1:2],collapse=",") ,"], "),
-        #    "Psi: [", paste(maxp[1:2],collapse=",") ,"], ",
-        #    "Sigma: [", paste(maxs[1:2],collapse=",") ,"]\n", sep="")
-  
+
       }
     }
   }

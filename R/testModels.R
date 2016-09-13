@@ -1,7 +1,7 @@
 testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald","likelihood"), df.com=NULL){
 # model comparison and hypothesis tests for k-dimensional estimands
 
-  # *** 
+  # ***
   # general errors
   if(!"list"%in%class(model) & !"list"%in%class(null.model) & !is.null(null.model)) stop("The 'model' and 'null.model' arguments must be lists of fitted statistical models.")
   if(!"list"%in%class(model) & is.null(null.model)) stop("The 'model' argument must be a list of fitted statistical models.")
@@ -28,13 +28,13 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
     if(!requireNamespace("lme4", quietly=TRUE)) stop("The 'lme4' package must be installed to handle 'merMod' class objects.")
     coef.method <- vc.method <- lr.method <- "lmer"
   }
-  
+
   # lme (nlme)
   if(any(grepl("^.?lme$",cls)) & coef.method=="default"){
     if(!requireNamespace("nlme", quietly=TRUE)) stop("The 'nlme' package must be installed to handle 'lme' class objects.")
     coef.method <- vc.method <- lr.method <- "nlme"
   }
-  
+
   # ***
   #!
   if(method=="D1"){
@@ -51,24 +51,24 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
     if(is.null(dim(Qhat))) dim(Qhat) <- c(1,m)
     if(is.null(dim(Uhat))) dim(Uhat) <- c(1,1,m)
     k <- dim(Qhat)[1]
-    
+
     Qbar <- apply(Qhat,1,mean)
     Ubar <- apply(Uhat,c(1,2),mean)
     B <- cov(t(Qhat))
     r <- (1+m^(-1))*sum(diag(B%*%solve(Ubar)))/k
     Ttilde <- (1 + r)*Ubar
-    
+
     # D1 (Li, Raghunathan and Rubin, 1991)
     val <- t(Qbar) %*% solve(Ttilde) %*% Qbar / k
     t <- k*(m-1)
-  
+
     if(!is.null(df.com)){
       a <- r*t/(t-2)
       vstar <- ( (df.com+1) / (df.com+3) ) * df.com
-      v <- 4 + ( (vstar-4*(1+a))^(-1) + (t-4)^(-1) * ((a^2*(vstar-2*(1+a))) / 
+      v <- 4 + ( (vstar-4*(1+a))^(-1) + (t-4)^(-1) * ((a^2*(vstar-2*(1+a))) /
            ((1+a)^2*(vstar-4*(1+a)))) )^(-1)
     } else {
-      if (t>4){ 
+      if (t>4){
         v <- 4 + (t-4) * (1 + (1 - 2*t^(-1)) * (r^(-1)))^2
       }else{
         v <- t * (1 + k^(-1)) * ((1 + r^(-1))^2) / 2
@@ -78,7 +78,7 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
 
     out <- matrix(c(val,k,v,p,r),ncol=5)
     colnames(out) <- c("F.value","df1","df2","p.value","RIV")
-    
+
     out <- list(
       call=match.call(),
       test=out,
@@ -136,7 +136,7 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
       m <- length(model)
       k <- attr(dW,"df")
       if(is.null(k)) stop("Degrees of freedom for the model comparison could not be detected.")
-  
+
     }
 
     # D2 (Li, Meng et al., 1991)
@@ -146,10 +146,10 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
 
     v <- k^(-3/m) * (m-1) * (1+r^(-1))^2
     p <- 1-pf(val, k, v)
-   
+
     out <- matrix(c(val,k,v,p,r),ncol=5)
     colnames(out) <- c("F.value","df1","df2","p.value","RIV")
-    
+
     out <- list(
       call=match.call(),
       test=out,
@@ -199,7 +199,7 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
     k <- attr(dL,"df")
 
     # LR at average estimates
-    switch( lr.method, 
+    switch( lr.method,
 
       lmer={
 
@@ -248,19 +248,19 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
       }
 
     )
-  
+
     # D3 (Meng & Rubin, 1992)
     dLtilde <- mean(dLt)
     r <- (m+1) * (k*(m-1))^(-1) * (dLbar-dLtilde)
     val <- dLtilde / (k*(1+r))
-  
+
     t <- k*(m-1)
     if( t>4 ){
       v <- 4 + (t-4) * (1 + (1-2*t^(-1)) * r^(-1))^2
     }else{
       v <- t * (1+k^(-1)) * (1+r^(-1))^2 / 2
     }
-  
+
     p <- 1- pf(val, k, v)
 
     out <- matrix(c(val,k,v,p,r),ncol=5)

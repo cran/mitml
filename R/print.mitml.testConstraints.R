@@ -41,7 +41,7 @@ print.mitml.testConstraints <- function(x,...){
 
 summary.mitml.testConstraints <- function(object,...){
 # summary method for objects of class mitml.testConstraints
-  
+
   print.mitml.testConstraints(object,...)
 
 }

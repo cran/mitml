@@ -44,7 +44,7 @@
   fe.fml <- c(if(attr(ft,"intercept")){"1"}else{"0"}, tl[!grepl("\\|",tl)])
   fe.fml <- as.formula(paste0("~", paste0(fe.fml,collapse="+")))
   # predictors: random
-  cl.fml <- as.formula(paste("~",clt[1])) 
+  cl.fml <- as.formula(paste("~",clt[1]))
   cl.ft <- terms(cl.fml)
   qvrs <- c(if(attr(cl.ft,"intercept")){"(Intercept)"}, attr(cl.ft,"term.labels"))
 
@@ -55,7 +55,7 @@
   pnames <- colnames(mmp)
   qnames <- colnames(mmq)
   psave <- setdiff( c(pnames,qnames), c("(Intercept)",colnames(data)) )
- 
+
   switch( method ,
     pan={ # panImpute (matrix input)
       y <- data.matrix(data[yvrs])
@@ -114,7 +114,7 @@
     mmp <- suppressWarnings( model.matrix(fe.fml, data=data) )
     pnames <- colnames(mmp)
     psave <- c( psave, setdiff( c(pnames), c("(Intercept)",colnames(data)) ) )
- 
+
     switch( method ,
       jomo={ # jomoImpute, for higher-level functions (data input)
         y <- data[yvrs]
@@ -143,7 +143,7 @@
   invisible(NULL)
 
 }
- 
+
 
 # prepare model input by type
 .model.byType <- function(data, type, group, group.original,
@@ -193,7 +193,7 @@
   pvrs <- c("(Intercept)",colnames(data)[type%in%c(2,3)])
   qvrs <- c("(Intercept)",colnames(data)[type==3])
   colnames(pred) <- pvrs
-  
+
   xcol <- 1:length(pvrs)
   zcol <- xcol[pvrs%in%qvrs]
 
@@ -234,7 +234,7 @@
     pred <- cbind(1,as.matrix(data[type.L2%in%c(2,3)]))
     pvrs <- c("(Intercept)",colnames(data)[type.L2%in%c(2,3)])
     colnames(pred) <- pvrs
-    
+
     xcol <- 1:length(pvrs)
 
     # assign to parent frame
@@ -245,7 +245,7 @@
     for(i in names(inp)) assign(i, inp[[i]], pos=parent.frame())
 
   }
-  
+
   invisible(NULL)
 
 }

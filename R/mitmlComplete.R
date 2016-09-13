@@ -1,7 +1,4 @@
-mitmlComplete <- function(x, print=0, force.list=FALSE){
-
-  # .completeOne <- mitml:::.completeOne
-  # .stripDataAttributes <- mitml:::.stripDataAttributes
+mitmlComplete <- function(x, print="all", force.list=FALSE){
 
   if(sum(print<=0)>1) stop("Only one negative or zero value is allowed in 'print'.")
 
@@ -46,7 +43,7 @@ mitmlComplete <- function(x, print=0, force.list=FALSE){
     }
 
   }
-  
+
   if(class(out)=="list") class(out) <- c("mitml.list","list")
   out
 
@@ -63,13 +60,13 @@ mitmlComplete <- function(x, print=0, force.list=FALSE){
     for(ff in fac){
       fi <- ind[,2]==ff
       lev <- attr(x,"labels")[[colnames(x)[ff]]]
-      x[ ind[fi,] ] <- lev[rpm[fi,i]]
+      if(sum(fi)>0) x[ ind[fi,] ] <- lev[rpm[fi,i]]
     }
 
   }else{
 
     x[ind] <- rpm[,i]
-    
+
   }
   .stripDataAttributes(x)
 

@@ -1,6 +1,8 @@
-testConstraints <- function(model, qhat, uhat, constraints, method=c("D1","D2"), df.com=NULL){
+testConstraints <- function(model, qhat, uhat, constraints, method=c("D1","D2"),
+                            df.com=NULL){
+
 # test constraints with multiply imputed data
-  
+
   if(missing(model)==(missing(qhat)|missing(uhat))) stop("Either 'model' or both 'qhat' and 'uhat' must be supplied.")
 
   # match methods
@@ -26,7 +28,7 @@ testConstraints <- function(model, qhat, uhat, constraints, method=c("D1","D2"),
       Qhat <- qhat
       Uhat <- uhat
     }
-    if(is.null(dim(Qhat))){ 
+    if(is.null(dim(Qhat))){
       dim(Qhat) <- c(1,length(qhat))
       nms <- if(is.list(qhat)) names(qhat[[1]]) else if(is.matrix(qhat)) rownames(qhat) else names(qhat)[1]
       dimnames(Qhat) <- list(nms, NULL)
@@ -59,7 +61,7 @@ testConstraints <- function(model, qhat, uhat, constraints, method=c("D1","D2"),
       if(!requireNamespace("lme4", quietly=TRUE)) stop("The 'lme4' package must be installed to handle 'merMod' class objects.")
       coef.method <- "lmer"
     }
-  
+
     # lme (nlme)
     if(any(grepl("^.?lme$",cls)) & coef.method=="default"){
       if(!requireNamespace("nlme", quietly=TRUE)) stop("The 'nlme' package must be installed to handle '(n)lme' class objects.")
@@ -113,7 +115,7 @@ testConstraints <- function(model, qhat, uhat, constraints, method=c("D1","D2"),
     newUhat[,,ii] <- newSigma
 
   }
- 
+
   # *** aggregation
   if(method=="D1"){
 
@@ -122,18 +124,18 @@ testConstraints <- function(model, qhat, uhat, constraints, method=c("D1","D2"),
     B <- cov(t(newQhat))
     r <- (1+m^(-1))*sum(diag(B%*%solve(Ubar)))/k
     Ttilde <- (1 + r)*Ubar
-    
+
     # D1 (Li, Raghunathan and Rubin, 1991)
     val <- t(Qbar) %*% solve(Ttilde) %*% Qbar / k
     t <- k*(m-1)
-  
+
     if(!is.null(df.com)){
       a <- r*t/(t-2)
       vstar <- ( (df.com+1) / (df.com+3) ) * df.com
-      v <- 4 + ( (vstar-4*(1+a))^(-1) + (t-4)^(-1) * ((a^2*(vstar-2*(1+a))) / 
+      v <- 4 + ( (vstar-4*(1+a))^(-1) + (t-4)^(-1) * ((a^2*(vstar-2*(1+a))) /
            ((1+a)^2*(vstar-4*(1+a)))) )^(-1)
     } else {
-      if (t>4){ 
+      if (t>4){
         v <- 4 + (t-4) * (1 + (1 - 2*t^(-1)) * (r^(-1)))^2
       }else{
         v <- t * (1 + k^(-1)) * ((1 + r^(-1))^2) / 2
@@ -160,7 +162,7 @@ testConstraints <- function(model, qhat, uhat, constraints, method=c("D1","D2"),
 
   out <- matrix(c(val,k,v,p,r),ncol=5)
   colnames(out) <- c("F.value","df1","df2","p.value","RIV")
-    
+
   out <- list(
     call=match.call(),
     constraints=cons,

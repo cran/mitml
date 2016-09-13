@@ -2,7 +2,7 @@
 \alias{read.mitml}
 \title{Read \code{mitml} objects from file}
 \description{
-This function loads \code{mitml} class objects from native R formats.
+This function loads \code{mitml} class objects from R binary formats (similar to \code{?load}), usually produced by \code{write.mitml}.
 }
 
 \usage{

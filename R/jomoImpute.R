@@ -4,17 +4,11 @@ jomoImpute <- function(data, type, formula, random.L1=c("none","mean","full"),
 
 # wrapper function for the different samplers of the jomo package
 
-  # .model.byFormula <- mitml:::.model.byFormula
-  # .model.byType <- mitml:::.model.byType
-  # .extractMatrix <- mitml:::.extractMatrix
-  # .check.modelL2 <- mitml:::.check.modelL2
-  # .check.variablesL2 <- mitml:::.check.variablesL2
-
   # checks arguments
   if(!missing(type) & !missing(formula)) stop("Only one of 'type' or 'formula' may be specified.")
   if(save.pred & !missing(type)){
     warning("Option 'save.pred' is ignored if 'type' is specified")
-    save.pred=FALSE 
+    save.pred=FALSE
   }
   random.L1 <- match.arg(random.L1)
 
@@ -148,7 +142,7 @@ jomoImpute <- function(data, type, formula, random.L1=c("none","mean","full"),
     }
 
   }
-  
+
   # * * * * * * * * * * * * * * * * * * * *
 
   # seed
@@ -166,6 +160,8 @@ jomoImpute <- function(data, type, formula, random.L1=c("none","mean","full"),
                            Dinv=diag(1,nq*nr2[gg]+nr2.L2[gg]) )
       if(random.L1!="none") prior[[gg]]$a <- nr2[gg]
     }
+  }else{ # check if prior is given as simple list
+    if(!is.list(prior[[1]])) prior <- rep(list(prior),ng)
   }
 
   # prepare output
@@ -185,7 +181,7 @@ jomoImpute <- function(data, type, formula, random.L1=c("none","mean","full"),
                                   max(nr2)*nq+max(nr2.L2),n.iter*m,ng) ),
                 sigma=array( NA, c(ifelse(random.L1=="full",max(nr2)*max(nc),max(nr2)),
                                    max(nr2),n.iter*m,ng) )))
-  
+
   # burn-in
   if(!silent){
     cat("Running burn-in phase ...\n")
@@ -197,7 +193,7 @@ jomoImpute <- function(data, type, formula, random.L1=c("none","mean","full"),
     gi <- group==gg
     gprior <- prior[[gg]]
 
-    # function arguments (group specific)v
+    # function arguments (group specific)
     gclus <- clus[gi]
     gclus <- matrix( match(gclus, unique(gclus))-1, ncol=1 )
     func.args <- list( Y=if(ncon>0 & ncat==0 & !isL2) y[gi,,drop=F] else NULL,
@@ -255,7 +251,7 @@ jomoImpute <- function(data, type, formula, random.L1=c("none","mean","full"),
     }
 
   }
-  
+
   # imputation
   for(ii in 1:m){
     if(!silent){
@@ -270,8 +266,7 @@ jomoImpute <- function(data, type, formula, random.L1=c("none","mean","full"),
       gprior <- prior[[gg]]
 
       # last state (imp)
-      # NOTE: finimp for jomo1 with con, finimp.latnorm for anything else (cat/mix, jomo2)
-      last.imp <- if(isL2 | ncat>0) glast[[gg]]$finimp.latnorm else glast[[gg]]$finimp 
+      last.imp <- if(isL2 | ncat>0) glast[[gg]]$finimp.latnorm else glast[[gg]]$finimp
       if(ncon>0 & ncat==0 & !isL2)
         last.imp <- last.imp[(nrow(y[gi,,drop=F])+1):nrow(last.imp), 1:ncon, drop=F]
       last.imp.L2 <- if(isL2) glast[[gg]]$l2.finimp.latnorm else NULL
@@ -396,7 +391,7 @@ jomoImpute <- function(data, type, formula, random.L1=c("none","mean","full"),
   )
   class(out) <- c("mitml","jomo")
   out
-  
+
 }
 
 # check for L2 model
@@ -408,7 +403,7 @@ jomoImpute <- function(data, type, formula, random.L1=c("none","mean","full"),
 
   if(is.list(x) & length(x)==1) x <- x[[1]] # unlist
   isL2 <- is.list(x) & length(x)==2
-  
+
   attr(x,"is.L2") <- isL2
   x
 

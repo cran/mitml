@@ -3,10 +3,6 @@ summary.mitml <- function(object, n.Rhat=3, goodness.of.appr=FALSE,
 
 # summary method for objects of class "mitml"
 
-  # .SDprop <- mitml:::.SDprop
-  # .GelmanRubin <- mitml:::.GelmanRubin
-  # .reducedACF <- mitml:::.reducedACF
-
   inc <- object$data
   ngr <- length(unique(attr(object$data,"group")))
   prm <- object$par.imputation
@@ -37,7 +33,7 @@ summary.mitml <- function(object, n.Rhat=3, goodness.of.appr=FALSE,
       cmat[,1] <- rep(1:ni,nj*nl)
       cmat[,2] <- rep(1:nj,each=ni,times=nl)
       cmat[,3] <- rep(1:nl,each=ni*nj)
-      colnames(cmat) <- c("i1", "i2", "grp", if(Rhat) "Rhat", if(SDprop) "SDprop", 
+      colnames(cmat) <- c("i1", "i2", "grp", if(Rhat) "Rhat", if(SDprop) "SDprop",
                           if(ACF) c("lag-1","lag-k","lag-2k"))
 
       for(ll in 1:nl){ # by group
@@ -58,7 +54,7 @@ summary.mitml <- function(object, n.Rhat=3, goodness.of.appr=FALSE,
             if(Rhat) cmat[ind,"Rhat"] <- .GelmanRubin(chn,n.Rhat)
             # goodness of approximation
             if(SDprop) cmat[ind,"SDprop"] <- .SDprop(chn)
-            # autocorrelation                   
+            # autocorrelation
             if(ACF){
               cmat[ind,"lag-1"] <- .reducedACF(chn, lag=1, smooth=0)
               cmat[ind,"lag-k"] <- .reducedACF(chn, lag=k, smooth=2, sd=.5)
@@ -82,7 +78,7 @@ summary.mitml <- function(object, n.Rhat=3, goodness.of.appr=FALSE,
     missing.rates=mdr,
     conv=conv
   )
-  
+
   class(smr) <- "mitml.summary"
   smr
 
@@ -105,10 +101,6 @@ summary.mitml <- function(object, n.Rhat=3, goodness.of.appr=FALSE,
     ll <- lag[li]
     # leave at 0 for constant value
     ac[li] <- if(ss.y>0) sum( y[1:(n-ll)] * y[1:(n-ll)+ll] ) / ss.y else 0
-    # naive method:
-    # n <- length(x)-ll
-    # mat <- matrix(c(x[1:n],x[(ll+1):n0]),n,2)
-    # ac[li] <- cor(mat)[1,2]
   }
 
   if(smooth>0){

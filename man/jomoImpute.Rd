@@ -1,8 +1,8 @@
 \name{jomoImpute}
 \alias{jomoImpute}
 \title{Impute multilevel missing data using \code{jomo}}
-\description{This function provides a interface to the \code{jomo} package using the MCMC algorithms presented in Carpenter & Kenward (2013).
-Using this wrapper function, \code{jomo} supports imputation of (mixed) categorical and continuous variables (Goldstein et al., 2009) as well as imputation using random (residual) covariance matrices (Yucel, 2011).
+\description{This function provides an interface to the \code{jomo} package, which uses the MCMC algorithms presented in Carpenter & Kenward (2013).
+Through this wrapper function, imputations can be generated for (mixed) categorical and continuous variables (Goldstein et al., 2009) at level 1 and level 2 as well as imputation using random (residual) covariance matrices (Yucel, 2011).
 Imputations can be generated using \code{type} or \code{formula}, which offer different options for model specification.}
 
 \usage{
@@ -32,8 +32,7 @@ jomoImpute(data, type, formula, random.L1=c("none","mean","full"), n.burn=5000,
 
 \details{
 
-This function serves as an interface to the \code{jomo} package.
-The function supports imputation of multilevel continuous and categorical data.
+This function serves as an interface to the \code{jomo} package and supports imputation of multilevel continuous and categorical data.
 In order for categorical variables to be detected correctly, these must be formatted as a \code{factor} variables (see examples).
 The imputation model can be specified using either the \code{type} or the \code{formula} argument.
 
@@ -59,49 +58,48 @@ Given below is a list of operators that \code{jomoImpute} currently understands:
   \item{\code{|}: denotes cluster-specific random effects and specifies the cluster indicator (i.e., \code{1|ID})}
   \item{\code{I()}: defines functions to be interpreted by \code{model.matrix}}
 }
-Predictors are allowed to have fixed effects, random effects or both on all target variables.
-The intercept is automatically included both as a fixed and random effect, but it can be constrained if necessary (see \code{\link{panImpute}}).
+Predictors are allowed to have fixed effects, random effects, or both on all target variables.
+The intercept is automatically included both as a fixed and a random effect, but it can be constrained if necessary (see \code{\link{panImpute}}).
 Note that, when specifying random effects other than the intercept, these will \emph{not} be automatically added as fixed effects and must be included explicitly.
 Any predictors defined by \code{I()} will be used for imputation but not included in the data set unless \code{save.pred=TRUE}.
 
-If missing data occur at both levels of the sample (level 1 and level 2), then it is possible to provide a list of two \code{formula}s or \code{type}s.
+If missing data occur at both levels of the sample (level 1 and level 2), then a list of two \code{formula}s or \code{type}s may be provided.
 The first element of this list denotes the imputation model for variables at level 1.
 The second element denotes the imputation model for variables at level 2.
-In that case, missing value are imputed jointly at both levels (see examples, see also Carpenter and Kenward, 2013; Goldstein et al., 2009).
+In such a case, missing values are imputed jointly at both levels (see examples, see also Carpenter and Kenward, 2013; Goldstein et al., 2009).
 
-It is possible to model the covariance matrix of residials at level 1 as random across clusters (Yucel, 2011; Carpenter & Kenward, 2013).
+It is possible to model the covariance matrix of residuals at level 1 as random across clusters (Yucel, 2011; Carpenter & Kenward, 2013).
 The \code{random.L1} argument determines this behavior and how the values of these matrices are stored.
-If set to "none", a common covariance matrix is assumed across groups (similar to \code{panImpute}).
-If set to "mean", the covariance matrices are random, but only the average covariance matrix is stored.
-If set to "full", the covariance matrices are random, and all variances and covariances from all clusters are stored.
+If set to \code{"none"}, a common covariance matrix is assumed across groups (similar to \code{panImpute}).
+If set to \code{"mean"}, the covariance matrices are random, but only the average covariance matrix is stored at each iteration.
+If set to \code{"full"}, the covariance matrices are random, and all variances and covariances from all clusters are stored.
 
 In order to run separate imputations for each level of an additional grouping variable, the \code{group} argument may be used.
 The name of the grouping variable must be given in quotes.
 
-As a default prior, \code{jomoImpute} uses least informative inverse-Wishart priors for the covariance matrices of random effects and of residuals, that is, with minimum degrees of freedom (largest dispersion) and identity matrices for scale.
+As a default prior, \code{jomoImpute} uses "least informative" inverse-Wishart priors for the covariance matrix of random effects (and residuals at level 2) and the covariance matrix of residuals at level 1, that is, with minimum degrees of freedom (largest dispersion) and identity matrices for scale.
 For better control, the \code{prior} argument may be used for specifying alternative prior distributions.
 These must be supplied as a list containing the following components:
 \itemize{
-  \item{\code{Binv}: scale matrix for the residual covariance matrix}
-  \item{\code{Dinv}: scale matrix for the covariance matrix of random effects}
+  \item{\code{Binv}: scale matrix for the covariance matrix of residuals at level 1}
+  \item{\code{Dinv}: scale matrix for the covariance matrix of random effects and residuals at level 2}
   \item{\code{a}: starting value for the degrees of freedom of random covariance matrices of residuals (only used with \code{random.L1="mean"} or \code{random.L1="full"})}
 }
-Note that \code{jomo} does not allow for the degrees of freedom for the inverse-Wishart priors to be specified by the user.
-These are always set to the lowest value possible (largest dispersion) or determined iteratively for the random covariance matrices of residuals (see above).
+Note that \code{jomo} does not allow for the degrees of freedom for the inverse-Wishart prior to be specified by the user.
+These are always set to the lowest value possible (largest dispersion) or determined iteratively if the residuals at level 1 are modeled as random (see above).
 
 }
 
 \value{
 
-Returns an object of class \code{mitml}.
-A \code{mitml} class object is a list, each containing the following components:
+Returns an object of class \code{mitml}, containing the following components:
 
-  \item{data}{The original (incomplete) data set that has been sorted according to the cluster variable and (if given) the grouping variable. An attribute \code{"sort"} contains the original row order. An attribute \code{"group"} contains the optional grouping variable.}
+  \item{data}{The original (incomplete) data set, sorted according to the cluster variable and (if given) the grouping variable, with several attributes describing the original order (\code{"sort"}), grouping (\code{"group"}) and factor levels of categorical variables.}
   \item{replacement.mat}{A matrix containing the multiple replacements (i.e., imputations) for each missing value. The replacement matrix contains one row for each missing value and one one column for each imputed data set.}
   \item{index.mat}{A matrix containing the row and column index for each missing value. The index matrix is used to \emph{link} the missing values in the data set with their corresponding rows in the replacement matrix.}
   \item{call}{The matched function call.}
-  \item{model}{A list containing the names of the cluster variable, the target variables, and the predictor variables with fixed and random effects, respectively.}
-  \item{random.L1}{A character string denoting the handling of random residual covariance matrices (see details).}
+  \item{model}{A list containing the names of the cluster variable, the target variables, and the predictor variables with fixed and random effects, at level 1 and level 2, respectively.}
+  \item{random.L1}{A character string denoting the handling of the (random) covariance matrix of residuals at level 1 (see details).}
   \item{prior}{The prior parameters used in the imputation model.}
   \item{iter}{A list containing the number of burn-in iterations, the number of iterations between imputations, and the number of imputed data sets.}
   \item{par.burnin}{A multi-dimensional array containing the parameters of the imputation model from the burn-in phase.}
@@ -111,8 +109,8 @@ A \code{mitml} class object is a list, each containing the following components:
 
 \note{
 
-For objects of class \code{mitml}, methods for the generic functions \code{print}, \code{summary} and \code{plot} have been defined.
-\code{mitmlComplete} is used to extract the imputed data sets.
+For objects of class \code{mitml}, methods for the generic functions \code{print}, \code{summary}, and \code{plot} have been defined.
+\code{mitmlComplete} is used for extracting the imputed data sets.
 
 }
 
@@ -193,6 +191,6 @@ imp <- jomoImpute(studentratings, formula=fml, group="FedState", n.burn=100, n.i
 # data with missing values at level 1 and level 2)
 
 fml <- list( JOBSAT + NEGLEAD + WLOAD ~ 1 + (1|GRPID) , COHES ~ 1 )
-imp <- jomoImpute(leadership, type=type, n.burn=100, n.iter=10, m=5)
+imp <- jomoImpute(leadership, formula=fml, n.burn=100, n.iter=10, m=5)
 }
 \keyword{models}

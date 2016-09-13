@@ -3,9 +3,8 @@
 \docType{data}
 \title{Example data set on employees' justice perceptions and satisfaction}
 \description{
-This is data set has been simulated to mimic typical data from organizational research.
-The data set features employees' ratings of their individual justice oriantation and their satisfaction with the organization in which they work.
-In addition, the data set features scores for the justice climate in each organization (defined at the level of organizations).
+This data set contains simulated data for employees nested within organizations, featuring employees' ratings of their individual justice oriantation and their satisfaction with the organization in which they work.
+In addition, the data set features scores for justice climate in each organization (defined at the level of organizations, level 2).
 Different organizations are denoted by the variable \code{id}.
 
 The data were simulated based on the results by Liao and Rupp (2005), as well as the secondary analyses of the same data given in Mathieu, Aguinis, Culpepper, and Chen, (2012).

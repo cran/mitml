@@ -1,6 +1,21 @@
 # * RELEASE HISTORY OF THE 'mitml' PACKAGE:
 --
 
+# Version 0.3-4 (2016-09-12)
+--
+
+* mitmlComplete:   changed default arguments ('print' now defaults to 'all',
+                   returning list of completed data sets)
+
+* jomoImpute:      bugfix (fixes error in which jomoImpute() rejected correctly
+                   specified priors when 'group=NULL')
+
+* mitmlComplete:   bugfix (fixes error with categorical target variables when
+                   there are no missing data)
+
+* plot:            adjusted warning message for 'pos' argument to include
+                   'beta2'.
+
 # Version 0.3-3 (2016-07-04)
 --
 

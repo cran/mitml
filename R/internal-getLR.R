@@ -19,7 +19,7 @@
 
   }else{
 
-    k <- attr(logLik(model[[1]]),"df") - attr(logLik(null.model[[1]]),"df") 
+    k <- attr(logLik(model[[1]]),"df") - attr(logLik(null.model[[1]]),"df")
     reml <- any(lme4::isREML(model[[1]]), lme4::isREML(null.model[[1]]))
     if(is.null(psi) & is.null(null.psi)){
       logL0 <- sapply(null.model,logLik)
@@ -53,7 +53,7 @@
 
   }else{
 
-    k <- attr(logLik(model[[1]]),"df") - attr(logLik(null.model[[1]]),"df") 
+    k <- attr(logLik(model[[1]]),"df") - attr(logLik(null.model[[1]]),"df")
     reml <- any(model[[1]]$method=="REML", null.model[[1]]$method=="REML")
     if(is.null(psi) & is.null(null.psi)){
       logL0 <- sapply(null.model,logLik)
@@ -139,7 +139,7 @@
 
     V <- diag(sig2,ni) + Zi %*% D %*% t(Zi)
     Vinv <- chol2inv(chol(V))
-    
+
     dV <- determinant(V,logarithm=TRUE)
     dV <- dV$modulus*dV$sign
     L[i] <- dV + t(Ri) %*% Vinv %*% (Ri)
@@ -183,7 +183,7 @@
 
     V <- diag(sig2,ni) + Zi %*% D %*% t(Zi)
     Vinv <- chol2inv(chol(V))
-    
+
     dV <- determinant(V,logarithm=TRUE)
     dV <- dV$modulus*dV$sign
     L[i] <- dV + t(Ri) %*% Vinv %*% (Ri)
@@ -211,7 +211,7 @@
 
   L <- -(n/2)*log(sig2) - (1/(2*sig2)) * t(r) %*% r
   as.numeric(L)
-  
+
 }
 
 .tryResidualDf <- function(object){

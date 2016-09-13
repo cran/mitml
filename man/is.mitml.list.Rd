@@ -14,8 +14,8 @@ is.mitml.list(x)
 }
 \value{
 
-\code{TRUE} or \code{FALSE}.
-In addition, a warning message is displayed if the contents of \code{x} do not appear to be data frames.
+Either \code{TRUE} or \code{FALSE}.
+A warning message is displayed if the contents of \code{x} do not appear to be data frames.
 
 }
 \author{Simon Grund}

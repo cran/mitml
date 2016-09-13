@@ -3,7 +3,7 @@
 \alias{within.mitml.list}
 \title{Evaluate an expression in a list of imputed data set}
 \description{
-This function evaluates an R expression in a list of multiply imputed data sets.
+The functions \code{with} and \code{within} evaluate R expressions in a list of multiply imputed data sets.
 }
 
 \usage{
@@ -23,17 +23,21 @@ This function evaluates an R expression in a list of multiply imputed data sets.
 
 \details{
 
-The two functions are \code{with} and \code{within} methods for objects of class \code{mitml.list}. Both \code{with} and \code{within} evaluate an R expression in each of the imputed data sets.
+The two functions are defined as \code{with} and \code{within} methods for objects of class \code{mitml.list}. Both \code{with} and \code{within} evaluate an R expression in each of the imputed data sets.
 However, the two functions return different values (see below).
 
 }
 
 \value{
 
-\itemize{
-  \item{\code{with}}{: Returns the evaluated expression from each data set as a list (class \code{mitml.result}. This is useful for fitting statistical models to multiply imputed data. The list of fitted models can be analyzed using \code{testEstimates}, \code{testModels}, \code{testConstraints}, or \code{anova}.}
-  \item{\code{within}}{: Evaluates the R expression for each data set and returns the altered data sets as a list \code{mitml.list}. This is useful for manipulating the data prior to data analysis (e.g., centering, calculating cluster means, etc.).}
-}
+% \itemize{
+%   \item{\code{with}}{: Returns the evaluated expression from each data set as a list (class \code{mitml.result}. This is useful for fitting statistical models to multiply imputed data. The list of fitted models can be analyzed using \code{testEstimates}, \code{testModels}, \code{testConstraints}, or \code{anova}.}
+%   \item{\code{within}}{: Evaluates the R expression for each data set and returns the altered data sets as a list \code{mitml.list}. This is useful for manipulating the data prior to data analysis (e.g., centering, calculating cluster means, etc.).}
+% }
+
+\code{with}: Returns the evaluated expression from each data set as a list (class \code{mitml.result}. This is useful for fitting statistical models to multiply imputed data. The list of fitted models can be analyzed using \code{\link{testEstimates}}, \code{\link{testModels}}, \code{\link{testConstraints}}, or \code{\link{anova}}.
+
+\code{within}: Evaluates the R expression for each data set and returns the altered data sets as a list \code{mitml.list}. This is useful for manipulating the data prior to data analysis (e.g., centering, calculating cluster means, etc.).
 
 }
 

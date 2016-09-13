@@ -14,7 +14,7 @@ write.mitmlSPSS(x, filename, sep="\t", dec=".", na.value=-999, syntax=TRUE,
 
 \arguments{
 
-  \item{x}{An object of class \code{mitml} or \code{mitml.list} (i.e., either produced by \code{panImpute}/\code{jomoImpute} or \code{mitmlComplete}).}
+  \item{x}{An object of class \code{mitml} or \code{mitml.list} as produced by \code{panImpute}, \code{jomoImpute}, \code{mitmlComplete}, or similar).}
   \item{filename}{Basic file name of the data and syntax files, to be specified without file extension.}
   \item{sep}{The field separator.}
   \item{dec}{The decimal separator.}
@@ -34,7 +34,7 @@ This syntax file mimics SPSS's functionality to read text files but circumvents 
 In order to read in the data, the syntax file must be opened and executed using SPSS.
 The syntax file may be altered manually if problems occur, for example, if the file path of the data file is not correctly represented in the syntax.
 
-Alternatively, \code{write.mitmlSAV} may be used for exporting directly to the SPSS native \code{.sav} format.
+Alternatively, \code{\link{write.mitmlSAV}} may be used for exporting directly to the SPSS native \code{.sav} format.
 However, this may offer less control over the data format.
 
 }

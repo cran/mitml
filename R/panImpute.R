@@ -4,18 +4,16 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10,
 
 # wrapper function for the Gibbs sampler in the pan package
 
-  # .model.byFormula <- mitml:::.model.byFormula
-  # .model.byType <- mitml:::.model.byType
 
   # empty objects to assign to
-  clname <- yvrs <- y <- ycat <- zcol <- xcol <- pred <- clus <- psave <- 
+  clname <- yvrs <- y <- ycat <- zcol <- xcol <- pred <- clus <- psave <-
     pvrs <- qvrs <- pnames <- qnames <- NULL
 
   # *** checks
   if(!missing(type) & !missing(formula)) stop("Only one of 'type' or 'formula' may be specified.")
   if(save.pred & !missing(type)){
     warning("Option 'save.pred' is ignored if 'type' is specified")
-    save.pred=FALSE 
+    save.pred=FALSE
   }
 
   # preserve original order
@@ -97,7 +95,7 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10,
   ipar <- list(beta=array( NA, c(np,nr,n.iter*m,ng) ),
                psi=array( NA, c(nr*nq,nr*nq,n.iter*m,ng) ),
                sigma=array( NA, c(nr,nr,n.iter*m,ng) ))
-  
+
   # burn-in
   if(!silent){
     cat("Running burn-in phase ...\n")
@@ -111,7 +109,7 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10,
     gpred <- pred[gi,]
     gclus <- clus[gi]
     # sort 1, ..., k
-    gclus <- match(gclus, unique(gclus)) 
+    gclus <- match(gclus, unique(gclus))
 
     cur <- pan::pan(gy, subj=gclus, gpred, xcol, zcol, prior, seed=rns[1,gg], iter=n.burn)
     glast[[gg]] <- cur$last
@@ -121,7 +119,7 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10,
     bpar[["sigma"]][,,,gg] <- cur$sigma
 
   }
-  
+
   # imputation
   for(ii in 1:m){
     if(!silent){
@@ -137,12 +135,12 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10,
       gpred <- pred[gi,]
       gclus <- clus[gi]
       # sort 1, ..., k
-      gclus <- match(gclus, unique(gclus)) 
-  
-      cur <- pan::pan(gy, subj=gclus, gpred, xcol, zcol, prior, seed=rns[ii+1,gg], iter=n.iter, 
+      gclus <- match(gclus, unique(gclus))
+
+      cur <- pan::pan(gy, subj=gclus, gpred, xcol, zcol, prior, seed=rns[ii+1,gg], iter=n.iter,
         start=glast[[gg]])
       glast[[gg]] <- cur$last
-  
+
       # populate output
       gy.imp[[gg]] <- cur$y
       ipar[["beta"]][,,(n.iter*(ii-1)+1):(n.iter*ii),gg] <- cur$beta
@@ -185,6 +183,6 @@ panImpute <- function(data, type, formula, n.burn=5000, n.iter=100, m=10,
   )
   class(out) <- c("mitml","pan")
   out
-  
+
 }
 

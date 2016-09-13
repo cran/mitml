@@ -21,7 +21,7 @@ clusterMeans <- function(x, cluster, adj=FALSE, group=NULL){
   # format cluster (and groups)
   if(!is.numeric(cluster)) cluster <- as.integer(cluster)
   if(!is.null(group)) cluster <- cluster + group/(ngr+1)
-  cluster <- match(cluster, unique(cluster)) 
+  cluster <- match(cluster, unique(cluster))
 
 
   n.obs <- rowsum(as.integer(!is.na(x)), cluster)

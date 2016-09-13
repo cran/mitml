@@ -2,7 +2,7 @@
 \alias{write.mitml}
 \title{Write \code{mitml} objects to file}
 \description{
-This function saves objects of class \code{mitml} in native R formats.
+This function saves objects of class \code{mitml} in R binary formats (similar to \code{?save}).
 }
 
 \usage{

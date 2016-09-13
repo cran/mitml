@@ -6,7 +6,7 @@ write.mitmlSAV <- function(x, filename){
 
   if("mitml"%in%class(x)){
     il <- mitmlComplete(x,0:x$iter$m)
-  }else{ 
+  }else{
     il <- x
   }
 
@@ -17,7 +17,7 @@ write.mitmlSAV <- function(x, filename){
   out <- do.call(rbind, il)
   haven::write_sav(out, filename)
 
-  invisible() 
+  invisible()
 
 }
 

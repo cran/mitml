@@ -13,7 +13,7 @@ write.mitmlMplus(x, filename, suffix="list", sep="\t", dec=".", na.value=-999)
 
 \arguments{
 
-  \item{x}{An object of class \code{mitml} or \code{mitml.list} (i.e., either produced by \code{panImpute}/\code{jomoImpute} or \code{mitmlComplete}).}
+  \item{x}{An object of class \code{mitml} or \code{mitml.list} as produced by \code{panImpute}, \code{jomoImpute}, \code{mitmlComplete}, or similar).}
   \item{filename}{Basic file name for the text files containing the imputed data sets, to be specified without file extension.}
   \item{suffix}{File name suffix for the index file.}
   \item{sep}{The field separator.}
@@ -24,11 +24,11 @@ write.mitmlMplus(x, filename, suffix="list", sep="\t", dec=".", na.value=-999)
 
 \details{
 
-The native M\emph{plus} format for multiply imputed data sets comprises a series of text files, each containing one imputed data set, and an index file containing the names of all data files.
+The M\emph{plus} format for multiply imputed data sets comprises a series of text files, each containing one imputed data set, and an index file containing the names of all data files.
 During export, factors and character variables are converted to numeric.
 Therefore, \code{write.mitmlMplus} produces a log file which contains information about the data set and the factors that have been converted.
 
-In addition, a basic M\emph{plus} input file is generated that can be used for setting up the subsequent analysis models.
+In addition, a basic M\emph{plus} input file is generated that can be used for setting up subsequent analysis models.
 
 }
 
