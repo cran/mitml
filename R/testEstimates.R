@@ -45,9 +45,9 @@ testEstimates <- function(model, qhat, uhat, var.comp=FALSE, df.com=NULL){
       v <- (vm^(-1)+vobs^(-1))^(-1)
     }
 
-    p <- 1-pt(abs(t),df=v)
+    p <- 2*(1-pt(abs(t),df=v))   # two-tailed p-value, SiG 2017-02-09
     out <- matrix(c(Qbar,se,t,v,p,r,fmi),ncol=7)
-    colnames(out) <- c("Estimate","Std.Error","t.value","df","p.value","RIV","FMI")
+    colnames(out) <- c("Estimate","Std.Error","t.value","df","P(>|t|)","RIV","FMI")   # two-tailed p-value, SiG 2017-02-09
     rownames(out) <- names(Qbar)
 
     # print vout for missing U
@@ -67,19 +67,30 @@ testEstimates <- function(model, qhat, uhat, var.comp=FALSE, df.com=NULL){
     coef.method <- vc.method <- "default"
 
     if(cls[1]=="lm") vc.method <- "lm"
+
+    # merMod (lme4)
     if(any(grepl("merMod",cls)) & coef.method=="default"){
       if(!requireNamespace("lme4", quietly=TRUE)) stop("The 'lme4' package must be installed in order to handle 'merMod' class objects.")
       coef.method <- vc.method <- "lmer"
     }
+
+    # lme (nlme)
     if(any(grepl("^.?lme$",cls)) & coef.method=="default"){
       if(!requireNamespace("nlme", quietly=TRUE)) stop("The 'nlme' package must be installed in order to handle 'lme' class objects.")
       coef.method <- vc.method <- "nlme"
     }
 
+    # geeglm (geepack)
+    if(any(grepl("geeglm",cls)) & coef.method=="default"){
+      if(!requireNamespace("geepack", quietly=TRUE)) stop("The 'geepack' package must be installed in order to handle 'geeglm' class objects.")
+      coef.method <- vc.method <- "geeglm"
+    }
+ 
     # * combine fixed coefficients
     fe <- switch(coef.method,
       lmer=.getCOEF.lmer(model,diagonal=TRUE),
       nlme=.getCOEF.nlme(model,diagonal=TRUE),
+      geeglm=.getCOEF.geeglm(model,diagonal=TRUE),
       default=.getCOEF.default(model,diagonal=TRUE)
     )
 
@@ -110,9 +121,10 @@ testEstimates <- function(model, qhat, uhat, var.comp=FALSE, df.com=NULL){
       v <- (vm^(-1)+vobs^(-1))^(-1)
     }
 
-    p <- 1-pt(abs(t),df=v)
+    p <- 2*(1-pt(abs(t),df=v))   # two-tailed p-value, SiG 2017-02-09
     out <- matrix(c(Qbar,se,t,v,p,r,fmi),ncol=7)
-    colnames(out) <- c("Estimate","Std.Error","t.value","df","p.value","RIV","FMI")
+    colnames(out) <- c("Estimate","Std.Error","t.value","df","P(>|t|)","RIV","FMI")   # two-tailed p-value, SiG 2017-02-09
+
     rownames(out) <- names(Qbar)
 
     # * combine variance components
@@ -122,6 +134,7 @@ testEstimates <- function(model, qhat, uhat, var.comp=FALSE, df.com=NULL){
       vc <- switch(vc.method,
         lmer=.getVC.lmer(model),
         nlme=.getVC.nlme(model),
+        geeglm=.getVC.geeglm(model),
         lm=.getVC.lm(model),
         default=list(vlist=NULL,addp=NULL)
       )
@@ -149,9 +162,12 @@ testEstimates <- function(model, qhat, uhat, var.comp=FALSE, df.com=NULL){
       }
       if(!is.null(vout)){
         vout <- matrix(vout,ncol=1)
-        colnames(vout) <- "Estimate"
         rownames(vout) <- nms
-        if(!is.null(addp)) vout <- rbind(vout, as.matrix(addp))
+        colnames(vout) <- "Estimate"
+      }
+      if(!is.null(addp)){
+        vout <- rbind(vout, as.matrix(addp))
+        colnames(vout) <- "Estimate"
       }
     }
 

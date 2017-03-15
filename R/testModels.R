@@ -35,6 +35,12 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
     coef.method <- vc.method <- lr.method <- "nlme"
   }
 
+  # geeglm (geepack)
+  if(any(grepl("geeglm",cls)) & coef.method=="default"){
+    if(!requireNamespace("geepack", quietly=TRUE)) stop("The 'geepack' package must be installed in order to handle 'geeglm' class objects.")
+    coef.method <- "geeglm"
+  }
+
   # ***
   #!
   if(method=="D1"){
@@ -42,6 +48,7 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
     fe <- switch(coef.method,
       lmer=.getCOEF.lmer(model,null.model),
       nlme=.getCOEF.nlme(model,null.model),
+      geeglm=.getCOEF.geeglm(model,null.model),
       default=.getCOEF.default(model,null.model)
     )
 
@@ -77,7 +84,7 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
     p <- 1-pf(val, k, v)
 
     out <- matrix(c(val,k,v,p,r),ncol=5)
-    colnames(out) <- c("F.value","df1","df2","p.value","RIV")
+    colnames(out) <- c("F.value","df1","df2","P(>F)","RIV")   # new label for p-value, SiG 2017-02-09
 
     out <- list(
       call=match.call(),
@@ -97,11 +104,12 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
 
     if(use=="wald"){
 
-      reml=FALSE
+      reml <- FALSE
 
       fe <- switch(coef.method,
         lmer=.getCOEF.lmer(model,null.model),
         nlme=.getCOEF.nlme(model,null.model),
+        geeglm=.getCOEF.geeglm(model,null.model),
         default=.getCOEF.default(model,null.model)
       )
 
@@ -148,7 +156,7 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
     p <- 1-pf(val, k, v)
 
     out <- matrix(c(val,k,v,p,r),ncol=5)
-    colnames(out) <- c("F.value","df1","df2","p.value","RIV")
+    colnames(out) <- c("F.value","df1","df2","P(>F)","RIV")   # new label for p-value, SiG 2017-02-09
 
     out <- list(
       call=match.call(),
@@ -168,7 +176,7 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
   if(method=="D3"){
 
     # error checking
-    if(!lr.method%in%c("lm","lmer","nlme")) stop("The 'D3' method is currently not supported for models of class '",cls,"'.")
+    if(!lr.method%in%c("lm","lmer","nlme")) stop("The 'D3' method is currently not supported for models of class '", cls[1],"'.")
     if(!grepl("^lme$",cls[1]) & lr.method=="nlme") stop("The 'D3' method is currently only supported for linear mixed-effects models.")
     if(!grepl("^l?merMod$",cls[1]) & lr.method=="lmer") stop("The 'D3' method is currently only supported for linear mixed-effects models.")
 
@@ -264,7 +272,7 @@ testModels <- function(model, null.model, method=c("D1","D2","D3"), use=c("wald"
     p <- 1- pf(val, k, v)
 
     out <- matrix(c(val,k,v,p,r),ncol=5)
-    colnames(out) <- c("F.value","df1","df2","p.value","RIV")
+    colnames(out) <- c("F.value","df1","df2","P(>F)","RIV")   # new label for p-value, SiG 2017-02-09
 
     out <- list(
       call=match.call(),
