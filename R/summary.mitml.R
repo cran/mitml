@@ -8,7 +8,11 @@ summary.mitml <- function(object, n.Rhat=3, goodness.of.appr=FALSE,
   prm <- object$par.imputation
   iter <- dim(prm[[1]])[3]
   k <- object$iter$iter
+  isML <- attr(object$model,"is.ML")
   isL2 <- attr(object$model,"is.L2")
+
+  # parameter chains (for backwards compatibility)
+  if(is.null(object$keep.chains)) object$keep.chains <- "full"
 
   # percent missing
   mdr <- sapply(inc, FUN=function(x){mean(is.na(x))})
@@ -23,7 +27,8 @@ summary.mitml <- function(object, n.Rhat=3, goodness.of.appr=FALSE,
   ACF <- autocorrelation
   if(Rhat|SDprop|ACF){
 
-    conv <- c(list(beta=NULL), if(isL2) list(beta2=NULL), list(psi=NULL, sigma=NULL))
+    conv <- c(list(beta=NULL), if(isL2) list(beta2=NULL), if(isML) list(psi=NULL),
+              list(sigma=NULL))
     for(pp in names(conv)){
 
       ni <- dim(prm[[pp]])[1]
@@ -74,6 +79,7 @@ summary.mitml <- function(object, n.Rhat=3, goodness.of.appr=FALSE,
     model=object$model,
     prior=object$prior,
     iter=object$iter,
+    keep.chains=object$keep.chains,
     ngr=ngr,
     missing.rates=mdr,
     conv=conv

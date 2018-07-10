@@ -8,41 +8,29 @@ opts_chunk$set(background="#ffffff", comment="#", collapse=FALSE,
 
 ## ------------------------------------------------------------------------------------
 library(mitml)
-data(studentratings)
+data(leadership)
 
 ## ------------------------------------------------------------------------------------
-summary(studentratings)
+summary(leadership)
 
 ## ---- echo=FALSE---------------------------------------------------------------------
-round(cor(studentratings[,-(1:3)], use="pairwise"),3)
-
-## ---- results="hide"-----------------------------------------------------------------
-ReadAchiev ~ 1 + ReadDis + (1|ID)
+leadership[73:78,]
 
 ## ------------------------------------------------------------------------------------
-fml <- ReadAchiev + ReadDis + SchClimate ~ 1 + (1|ID)
+fml <- list( JOBSAT + NEGLEAD + WLOAD ~ 1 + (1|GRPID) , # Level 1
+             COHES ~ 1 )                                # Level 2
 
 ## ---- results="hide"-----------------------------------------------------------------
-imp <- panImpute(studentratings, formula=fml, n.burn=5000, n.iter=100, m=100)
+imp <- jomoImpute(leadership, formula=fml, n.burn=5000, n.iter=250, m=20)
 
 ## ------------------------------------------------------------------------------------
 summary(imp)
 
-## ----conv, echo=FALSE----------------------------------------------------------------
-plot(imp, trace="all", print="beta", pos=c(1,2), export="png", dev.args=list(width=720, height=380, pointsize=16))
-
-## ---- eval=FALSE---------------------------------------------------------------------
-#  plot(imp, trace="all", print="beta", pos=c(1,2))
-
 ## ------------------------------------------------------------------------------------
 implist <- mitmlComplete(imp, "all")
 
-## ---- message=FALSE------------------------------------------------------------------
-library(lme4)
-fit <- with(implist, lmer(ReadAchiev ~ 1 + ReadDis + (1|ID)))
-
-## ------------------------------------------------------------------------------------
-testEstimates(fit, var.comp=TRUE)
+## ---- echo=FALSE---------------------------------------------------------------------
+implist[[1]][73:78,]
 
 ## ---- echo=F-------------------------------------------------------------------------
 cat("Author: Simon Grund (grund@ipn.uni-kiel.de)\nDate:  ", as.character(Sys.Date()))
