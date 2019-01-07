@@ -1,8 +1,8 @@
 Package: mitml
 Type: Package
 Title: Tools for Multiple Imputation in Multilevel Modeling
-Version: 0.3-6
-Date: 2018-07-10
+Version: 0.3-7
+Date: 2019-01-02
 Author: Simon Grund [aut,cre], Alexander Robitzsch [aut], Oliver Luedtke [aut]
 Maintainer: Simon Grund <grund@ipn.uni-kiel.de>
 BugReports: https://github.com/simongrund1/mitml/issues
@@ -18,6 +18,6 @@ Description: Provides tools for multiple imputation of missing data in multileve
 License: GPL (>= 2)
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2018-07-10 12:43:56 UTC; simon
+Packaged: 2019-01-02 10:26:03 UTC; simon
 Repository: CRAN
-Date/Publication: 2018-07-10 16:40:21 UTC
+Date/Publication: 2019-01-07 18:10:03 UTC
