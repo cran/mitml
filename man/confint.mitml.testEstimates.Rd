@@ -7,7 +7,7 @@ Computes confidence intervals on the basis of the final parameter estimates and 
 
 \usage{
 
-\method{confint}{mitml.testEstimates}(object, parm, level=0.95, ...)
+\method{confint}{mitml.testEstimates}(object, parm, level = 0.95, ...)
 
 }
 \arguments{
@@ -21,7 +21,7 @@ Computes confidence intervals on the basis of the final parameter estimates and 
 }
 \details{
 
-This function calculates confidence intervals with the given confidence level for the specified parameters on the basis of a $t$-distribution, with estimates, standard errors, and degrees of freedom as returned by \code{testEstimates}.
+This function computes confidence intervals with the given confidence level for the pooled parameters on the basis of a \eqn{t}-distribution, with estimates, standard errors, and degrees of freedom as returned by \code{\link{testEstimates}}.
 
 }
 \value{
@@ -37,19 +37,19 @@ A matrix containing the lower and upper bounds of the confidence intervals.
 data(studentratings)
 
 fml <- ReadDis ~ ReadAchiev + (1|ID)
-imp <- panImpute(studentratings, formula=fml, n.burn=500, n.iter=100, m=5)
+imp <- panImpute(studentratings, formula = fml, n.burn = 500, n.iter = 100, m = 5)
 
-implist <- mitmlComplete(imp, print=1:5)
+implist <- mitmlComplete(imp)
 
 # fit regression model
 fit <- with(implist, lm(ReadDis ~ 1 + ReadAchiev))
 est <- testEstimates(fit)
 
-# calculate confidence intervals
+# compute confidence intervals
 confint(est)
 
 # ... with different confidence levels
-confint(est, level=0.90)
-confint(est, level=0.999)
+confint(est, level = 0.90)
+confint(est, level = 0.999)
 }
 

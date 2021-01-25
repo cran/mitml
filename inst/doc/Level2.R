@@ -21,7 +21,7 @@ fml <- list( JOBSAT + NEGLEAD + WLOAD ~ 1 + (1|GRPID) , # Level 1
              COHES ~ 1 )                                # Level 2
 
 ## ---- results="hide"-----------------------------------------------------------------
-imp <- jomoImpute(leadership, formula=fml, n.burn=5000, n.iter=250, m=20)
+imp <- jomoImpute(leadership, formula = fml, n.burn = 5000, n.iter = 250, m = 20)
 
 ## ------------------------------------------------------------------------------------
 summary(imp)

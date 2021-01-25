@@ -23,16 +23,17 @@ ReadAchiev ~ 1 + ReadDis + (1|ID)
 fml <- ReadAchiev + ReadDis + SchClimate ~ 1 + (1|ID)
 
 ## ---- results="hide"-----------------------------------------------------------------
-imp <- panImpute(studentratings, formula=fml, n.burn=5000, n.iter=100, m=100)
+imp <- panImpute(studentratings, formula = fml, n.burn = 5000, n.iter = 100, m = 100)
 
 ## ------------------------------------------------------------------------------------
 summary(imp)
 
 ## ----conv, echo=FALSE----------------------------------------------------------------
-plot(imp, trace="all", print="beta", pos=c(1,2), export="png", dev.args=list(width=720, height=380, pointsize=16))
+plot(imp, trace = "all", print = "beta", pos = c(1,2), export = "png",
+     dev.args = list(width=720, height=380, pointsize=16))
 
 ## ---- eval=FALSE---------------------------------------------------------------------
-#  plot(imp, trace="all", print="beta", pos=c(1,2))
+#  plot(imp, trace = "all", print = "beta", pos = c(1,2))
 
 ## ------------------------------------------------------------------------------------
 implist <- mitmlComplete(imp, "all")
@@ -42,7 +43,7 @@ library(lme4)
 fit <- with(implist, lmer(ReadAchiev ~ 1 + ReadDis + (1|ID)))
 
 ## ------------------------------------------------------------------------------------
-testEstimates(fit, var.comp=TRUE)
+testEstimates(fit, extra.pars = TRUE)
 
 ## ---- echo=F-------------------------------------------------------------------------
 cat("Author: Simon Grund (grund@ipn.uni-kiel.de)\nDate:  ", as.character(Sys.Date()))

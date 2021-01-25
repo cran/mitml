@@ -19,24 +19,26 @@ read.mitml(filename)
 
 \value{
 
-Returns the saved \code{mitml} class object.
+An object of class \code{mitml}.
 
 }
 
 \author{Simon Grund}
 \seealso{\code{\link{panImpute}}, \code{\link{jomoImpute}}, \code{\link{write.mitml}}}
 \examples{
+\dontrun{
 data(studentratings)
 
 fml <- ReadDis + SES ~ ReadAchiev + (1|ID)
-imp <- panImpute(studentratings, formula=fml, n.burn=1000, n.iter=100, m=5)
+imp <- panImpute(studentratings, formula = fml, n.burn = 1000, n.iter = 100, m = 5)
 
 # write 'mitml' object
-write.mitml(imp, filename="imputation.R")
+write.mitml(imp, filename = "imputation.R")
 
 # read previously saved 'mitml' object
-previous.imp <- read.mitml("imputation.R")
+old.imp <- read.mitml("imputation.R")
 
-class(previous.imp)
-previous.imp
+class(old.imp)
+old.imp
+}
 }

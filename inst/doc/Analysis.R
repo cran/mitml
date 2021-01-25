@@ -16,15 +16,15 @@ summary(studentratings)
 
 ## ---- results="hide"-----------------------------------------------------------------
 fml <- ReadDis + SES ~ 1 + Sex + (1|ID)
-imp <- panImpute(studentratings, formula=fml, n.burn=5000, n.iter=200, m=20)
+imp <- panImpute(studentratings, formula = fml, n.burn = 5000, n.iter = 200, m = 20)
 
 ## ------------------------------------------------------------------------------------
 implist <- mitmlComplete(imp, "all")
 
 ## ------------------------------------------------------------------------------------
-implist <- within(implist,{
-  G.SES <- clusterMeans(SES,ID) # calculate group means
-  I.SES <- SES - G.SES          # center around group means
+implist <- within(implist, {
+  G.SES <- clusterMeans(SES, ID) # calculate group means
+  I.SES <- SES - G.SES           # center around group means
 })
 
 ## ---- eval=FALSE---------------------------------------------------------------------
@@ -36,7 +36,7 @@ implist <- within(implist,{
 #  implist <- as.mitml.list(implist)
 
 ## ------------------------------------------------------------------------------------
-fit <- with(implist,{
+fit <- with(implist, {
   lmer(MathAchiev ~ 1 + Sex + I.SES + G.SES + (1|ID))
 })
 
@@ -44,28 +44,28 @@ fit <- with(implist,{
 testEstimates(fit)
 
 ## ------------------------------------------------------------------------------------
-testEstimates(fit, var.comp=TRUE, df.com=46)
+testEstimates(fit, extra.pars = TRUE, df.com = 46)
 
 ## ------------------------------------------------------------------------------------
-fit.null <- with(implist,{
+fit.null <- with(implist, {
   lmer(MathAchiev ~ 1 + Sex + (1|ID))
 })
 
 testModels(fit, fit.null)
 
 ## ------------------------------------------------------------------------------------
-testModels(fit, fit.null, df.com=46)
+testModels(fit, fit.null, df.com = 46)
 
 ## ------------------------------------------------------------------------------------
 testModels(fit, fit.null, method="D3")
 
 ## ------------------------------------------------------------------------------------
 c1 <- c("I.SES", "G.SES")
-testConstraints(fit, constraints=c1)
+testConstraints(fit, constraints = c1)
 
 ## ------------------------------------------------------------------------------------
 c2 <- c("G.SES - I.SES")
-testConstraints(fit, constraints=c2)
+testConstraints(fit, constraints = c2)
 
 ## ---- echo=F-------------------------------------------------------------------------
 cat("Author: Simon Grund (grund@ipn.uni-kiel.de)\nDate:  ", as.character(Sys.Date()))
