@@ -1,4 +1,4 @@
-c341982495f32766a1f633e8c6dceded *DESCRIPTION
+ab14733fa345c2e79bc580a0f3b5944c *DESCRIPTION
 a9150117beaca26fe5685727d2bc7d19 *NAMESPACE
 914cf0f523f5ea5ea1f5b3db083f4f91 *NEWS
 9e2cb0672778a8b4e5baedf296e6f910 *R/amelia2mitml.list.R
@@ -29,7 +29,7 @@ bbaded410f97f515bc2d9133b9f5517f *R/plot.mitml.R
 c4984c79b2e63160e3bb8a6ef222c0e0 *R/print.mitml.summary.R
 38be19315e70661fba6fc966b4077ad2 *R/print.mitml.testConstraints.R
 f66cb1041ef51e2a520a4352b4d7e578 *R/print.mitml.testEstimates.R
-baed10dd49796cda497219ba530dca71 *R/print.mitml.testModels.R
+34bb783ac515f2fa713d06ff72e88432 *R/print.mitml.testModels.R
 94c739e259a86af9b9e9ded3ffe96ccf *R/rbind.mitml.list.R
 9e3ca5c9065a56c31896d4aac0c81bf3 *R/read.mitml.R
 983555ebc47d9a68c11bdcbd9cad18db *R/sort.mitml.list.R
@@ -38,7 +38,7 @@ ef4f239aac0d708be5a5ae7e600ec6ff *R/summary.mitml.R
 2410651b900ee8d65ac1fe4d6875846e *R/testConstraints.R
 4a389ee875d04d6757c340a84f3f1245 *R/testEstimates.R
 f5d6ef965eb8589c5133a2d6b131fc9e *R/testModels.R
-75e05e4f70a79275a4a1e622ef1cfdd4 *R/with.mitml.list.R
+a868b90aa1c7e8e15f8507d124fde16e *R/with.mitml.list.R
 c57812eefeea73f36f8888769f708729 *R/within.mitml.list.R
 0d51e817cdff9db18330650a80506123 *R/write.mitml.R
 342094c7ffe2459319b1eecb4d73fd0c *R/write.mitmlMplus.R
@@ -52,13 +52,13 @@ d0f77274c88e5e55b58fdfa6eb22eab9 *build/vignette.rds
 1856395651bfbea14af44ce56f1fa37e *data/studentratings.rda
 4be38b5ab626fe9ffb233732ddb3c024 *inst/doc/Analysis.R
 017500a5595ae38291b0ffa2583496c5 *inst/doc/Analysis.Rmd
-f68f663efcbb1eb87283c227cbb94134 *inst/doc/Analysis.html
+f08a5b7848c2133dcf11c9a46a3459ad *inst/doc/Analysis.html
 c96d94ae085ccb50190538802602dc71 *inst/doc/Introduction.R
 3b805eada4bbaaf1fe5b011448a9a60d *inst/doc/Introduction.Rmd
-1c921a5ac4ce33c8cb45c3ca62ef3093 *inst/doc/Introduction.html
+e7be3509aa8434dc1726a9e3e343c1b0 *inst/doc/Introduction.html
 f88914d5ec260593ea94284183d2467d *inst/doc/Level2.R
 14b067e738e92adba38ce79703d7df92 *inst/doc/Level2.Rmd
-8236ce3c9f8042987208e87c5c61b629 *inst/doc/Level2.html
+8026b50918bb54dd9b7a47662af1cfb8 *inst/doc/Level2.html
 fcc362a706fce653216dc2d8624aa6ce *man/amelia2mitml.list.Rd
 833da5c9e2c0534920641034a38ba1c8 *man/anova.mitml.result.Rd
 b9c8438ef04243af5a1458c2613fbe96 *man/as.mitml.list.Rd
@@ -84,7 +84,7 @@ d7e6f07f4cdaeafebf675a2df332058e *man/summary.mitml.Rd
 a997c65c9fd5388f783c0125210cd5e8 *man/testConstraints.Rd
 a8527cc833bdc1f8176f2e3d6e72ef4f *man/testEstimates.Rd
 eaec5e993d2417ca8a62dcb2f8a12d29 *man/testModels.Rd
-2874a37f583a4c0aa3bf76b9454d82c1 *man/with.mitml.list.Rd
+c0aa4f42e5c97070f1c498e528e523fa *man/with.mitml.list.Rd
 ab738a241c98727cfd75a68a8b98a1b4 *man/write.mitml.Rd
 8db0c82ec77ce5b4e5b5757260fddcb5 *man/write.mitmlMplus.Rd
 db864a33f735879330b68e086b9e26f5 *man/write.mitmlSAV.Rd
