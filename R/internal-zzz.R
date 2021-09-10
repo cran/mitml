@@ -1,4 +1,4 @@
-.localUpdate <- function(object, ...){
+.localUpdate <- function(object, envir = parent.frame(), ...){
 # update call in parent frame
 
   cll <- getCall(object)
@@ -8,7 +8,8 @@
   extras <- match.call(expand.dots = FALSE)$...
   for(i in names(extras)) cll[[i]] <- extras[[i]]
 
-  eval(cll, parent.frame())
+  # update in local environment
+  eval(cll, envir = envir)
 
 }
 

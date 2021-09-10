@@ -26,7 +26,14 @@
     </style>
 
 
-<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
@@ -273,10 +280,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 # Combination method: D1
 # 
 #     F.value     df1     df2   P(&gt;F)     RIV 
-#       6.185       2 658.241   0.002   0.280 
+#       6.095       2 674.475   0.002   0.275 
 # 
 # Unadjusted hypothesis test as appropriate in larger samples.
-# Models originally fit with REML were automatically refit using ML.</code></pre>
+# Models fitted with REML were used as is.</code></pre>
 <blockquote>
 <p><strong>Note regarding the order of arguments:</strong> Please note that <code>testModels</code> expects that the first argument contains the full model, and the second argument contains the restricted model. If the order of the arguments is reversed, the results will not be interpretable.</p>
 </blockquote>
@@ -291,11 +298,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 # Combination method: D1
 # 
 #     F.value     df1     df2   P(&gt;F)     RIV 
-#       6.185       2  39.720   0.005   0.280 
+#       6.095       2  39.812   0.005   0.275 
 # 
 # Hypothesis test adjusted for small samples with df=[46]
 # complete-data degrees of freedom.
-# Models originally fit with REML were automatically refit using ML.</code></pre>
+# Models fitted with REML were used as is.</code></pre>
 <p>The pooling method used by <code>testModels</code> is determined by the <code>method</code> argument. For example, to calculate the pooled LRT corresponding to the Wald test above (i.e., <span class="math inline">\(D_3\)</span>), the following command can be issued.</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testModels</span>(fit, fit.null, <span class="at">method=</span><span class="st">&quot;D3&quot;</span>)</span></code></pre></div>
 <pre><code># 
@@ -309,7 +316,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 #     F.value     df1     df2   P(&gt;F)     RIV 
 #       5.787       2 519.143   0.003   0.328 
 # 
-# Models originally fit with REML were automatically refit using ML.</code></pre>
+# Models originally fitted with REML were refitted using ML.</code></pre>
 </div>
 <div id="constraints-on-parameters" class="section level4">
 <h4>Constraints on parameters</h4>
@@ -366,7 +373,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Snijders, T. A. B., &amp; Bosker, R. J. (2012). <em>Multilevel analysis: An introduction to basic and advanced multilevel modeling</em>. Thousand Oaks, CA: Sage.</p>
 <hr />
 <pre><code># Author: Simon Grund (grund@ipn.uni-kiel.de)
-# Date:   2021-02-05</code></pre>
+# Date:   2021-09-10</code></pre>
 </div>
 </div>
 </div>
