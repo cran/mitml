@@ -33,5 +33,5 @@ implist <- mitmlComplete(imp, "all")
 implist[[1]][73:78,]
 
 ## ---- echo=F-------------------------------------------------------------------------
-cat("Author: Simon Grund (grund@ipn.uni-kiel.de)\nDate:  ", as.character(Sys.Date()))
+cat("Author: Simon Grund (simon.grund@uni-hamburg.de)\nDate:  ", as.character(Sys.Date()))
 

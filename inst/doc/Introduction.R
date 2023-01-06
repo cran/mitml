@@ -46,5 +46,5 @@ fit <- with(implist, lmer(ReadAchiev ~ 1 + ReadDis + (1|ID)))
 testEstimates(fit, extra.pars = TRUE)
 
 ## ---- echo=F-------------------------------------------------------------------------
-cat("Author: Simon Grund (grund@ipn.uni-kiel.de)\nDate:  ", as.character(Sys.Date()))
+cat("Author: Simon Grund (simon.grund@uni-hamburg.de)\nDate:  ", as.character(Sys.Date()))
 
