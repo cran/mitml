@@ -1,4 +1,4 @@
-b716ef2143752255840a4f45ed41685d *DESCRIPTION
+9679410b15efc520abb6635aec1476d9 *DESCRIPTION
 4777d4a72259d367c5881187b7af110e *NAMESPACE
 a3ffd81154e7c78f4be7bd00cc67b8e2 *NEWS
 9e2cb0672778a8b4e5baedf296e6f910 *R/amelia2mitml.list.R
@@ -10,9 +10,9 @@ a3ffd81154e7c78f4be7bd00cc67b8e2 *NEWS
 72f1edcdffdad9de68cb3da46ea64ecd *R/coef.mitml.testEstimates.R
 42a496bae1e4d2e06c47b9478c7393fa *R/confint.mitml.testEstimates.R
 cb5850d9fd2826b17484e7d206e349b7 *R/internal-convergence.R
-2ff1de5729f52a93235eb76bedf70d37 *R/internal-methods-estimates.R
-eecfce5f8de2b363d10782c859d1c7bc *R/internal-methods-likelihood.R
-876a5d47a11f27f79d22fa124729b9ce *R/internal-methods-zzz.R
+10e438948ff38d399264a34fc0518e63 *R/internal-methods-estimates.R
+94a12c3d9c449fbc94e8687e9c548a77 *R/internal-methods-likelihood.R
+21193143ba6eda7b7d0556fcd024c673 *R/internal-methods-zzz.R
 20e44bb67ffc173e74a9a9a82213e19b *R/internal-model.R
 2fe77d1ee84d79aa775e30ad272fe9a2 *R/internal-pool.R
 45c1cc39de56f36dc2f9a519490d6e5b *R/internal-zzz.R
@@ -55,13 +55,13 @@ aa7795f230bdf7460dadf7ffb248f2cf *R/zzz.R
 1856395651bfbea14af44ce56f1fa37e *data/studentratings.rda
 36c7d3d5e455e718395e26fff112174d *inst/doc/Analysis.R
 7fb28a595e6b6b6ff21357345aaff550 *inst/doc/Analysis.Rmd
-2acbdfe2ae8ecf1a3bbe56cfca6fd370 *inst/doc/Analysis.html
+98e7689cf78998e7619c61f5f0e7248a *inst/doc/Analysis.html
 17368b3bfb14520fc92907c8962ac0d0 *inst/doc/Introduction.R
 8529b16db97243b4d7ad131b205ecb30 *inst/doc/Introduction.Rmd
-03557aab734b543a4c8b126bacf9f33a *inst/doc/Introduction.html
+cfd97d96b8ea2383a5c45f763e519d36 *inst/doc/Introduction.html
 05e1fe541d828e6a120d3e47653e07c9 *inst/doc/Level2.R
 a7fabeadf58d32525045a48b46cccaae *inst/doc/Level2.Rmd
-5ddb847b544dc29997df8132ee80217b *inst/doc/Level2.html
+1b4655385844012f342444dd55f82fdf *inst/doc/Level2.html
 fcc362a706fce653216dc2d8624aa6ce *man/amelia2mitml.list.Rd
 833da5c9e2c0534920641034a38ba1c8 *man/anova.mitml.result.Rd
 b9c8438ef04243af5a1458c2613fbe96 *man/as.mitml.list.Rd
